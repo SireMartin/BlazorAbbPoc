@@ -1,0 +1,30 @@
+﻿<TelerikBreadcrumb Data="@Items">
+</TelerikBreadcrumb>
+
+@code {
+        [Parameter]
+        public string? PageRoute { get; set; }
+
+    public List<BreadcrumbItem> Items { get; set; } = new();
+
+    public class BreadcrumbItem
+    {
+        public string Text { get; set; }
+        public string Icon { get; set; }
+        public string Url { get; set; }
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Items.Clear();
+        Items.AddRange(PageRoute.Split("/").Select(x => new BreadcrumbItem { Text = x }));
+        //apply uri to breadcrumb items
+        string? runningItem = null;
+        foreach(var iter in Items)
+        {
+            runningItem = runningItem is null ? iter.Text : $"{runningItem}/{iter.Text}";
+            iter.Url = $"navigation/{runningItem}";
+        }
+    }
+}

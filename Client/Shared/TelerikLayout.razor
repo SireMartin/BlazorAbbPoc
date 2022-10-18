@@ -1,0 +1,24 @@
+﻿@using Fluxor;
+@using BlazorAbbPoc.Client.Data;
+@using BlazorAbbPoc.Client.Store;
+@using BlazorAbbPoc.Client.Store.Actions;
+
+@inherits Fluxor.Blazor.Web.Components.FluxorLayout
+
+@inject IHttpClientFactory ClientFactory
+@inject IDispatcher Dispatcher
+
+<TelerikRootComponent>
+    @Body
+</TelerikRootComponent>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        var test = await httpClient.GetFromJsonAsync<NavItem>("data/navitems.json");
+        var navConfig = new NavigationConfigurationChangedAction(test);
+        Dispatcher.Dispatch(navConfig);
+    }
+}

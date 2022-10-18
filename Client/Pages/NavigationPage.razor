@@ -1,0 +1,58 @@
+﻿@page "/Navigation/{*pageRoute}"
+
+@using System.Text.Json
+@using Fluxor
+@using BlazorAbbPoc.Client.Store
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@inject IState<NavigationConfigurationState> NavConfigState
+@inject NavigationManager NavMan
+
+<h3>@PageRoute</h3>
+
+@*@if(PageRoute is not null)
+{
+    <text>@PageRoute</text>
+}
+
+<br/>
+
+@if(NavConfigState?.Value is not null)
+{
+    <text>@(JsonSerializer.Serialize(NavConfigState.Value.Cont, new JsonSerializerOptions{ WriteIndented = true}))</text>
+}
+
+<br/>
+
+@if (NavConfigState?.Value is not null && NavConfigState.Value.Cont.Count() != 0 && PageRoute is not null)
+{
+    <text>selected component = @(JsonSerializer.Serialize(NavConfigState.Value.Cont[PageRoute], new JsonSerializerOptions { WriteIndented = true }))</text>
+} *@
+
+<div class="container">
+    <div class="row">
+        <AbbBreadCrumb PageRoute="@PageRoute" />
+    </div>
+
+    @if (NavConfigState?.Value is not null && NavConfigState.Value.Cont.Count() != 0 && PageRoute is not null)
+    {
+        foreach (var iter in NavConfigState.Value.Cont[PageRoute])
+        {
+            <div class="row my-4">
+                <TelerikButton OnClick="@(() => ButtonClickHandler(iter.pageType, iter.itemId))">@(iter.itemId.Split("/").Last())</TelerikButton>
+            </div>
+        }
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public string? PageRoute { get; set; }
+
+    private void ButtonClickHandler(string argPageType, string argItemId)
+    {
+        NavMan.NavigateTo($"{argPageType}/{argItemId}");
+    }
+}

@@ -1,0 +1,46 @@
+﻿@page "/plcdata"
+@using System.Timers;
+@inject HttpClient httpClient
+
+<PageTitle>PlcData</PageTitle>
+
+<h1>PlcData</h1>
+
+<p role="status">Last mqtt data:</p>
+@if(@currentPlcData is not null)
+{
+    <p>Temp     : @currentPlcData.temperature</p>
+    <p>Pressure : @currentPlcData.pressure</p>
+}
+
+
+@code {
+    private Timer timer = new Timer();
+    public BlazorAbbPoc.Shared.PlcData currentPlcData;
+
+    protected override void OnInitialized()
+    {
+        timer.Interval = 500;
+        timer.Elapsed += HandleTimer;
+        timer.AutoReset = true;
+        timer.Enabled = true;
+    }
+
+    private async void HandleTimer(object sender, ElapsedEventArgs e)
+    {
+        await UpdateState();
+    }
+
+    private async Task UpdateState()
+    {
+        try
+        {
+            currentPlcData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.PlcData>("api/plcdata");
+        }
+        catch (Exception ex)
+        {
+            string m = ex.Message;
+        }
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,61 @@
+﻿@page "/EMax/{*ItemId}"
+
+<h3>@ItemId</h3>
+
+<div class="container">
+    <div class="row">
+        <AbbBreadCrumb PageRoute="@ItemId" />
+    </div>
+
+@*    <div class="row my-4">
+        <TelerikCircularGauge Width="100px" Height="100px">
+
+            <CircularGaugePointers>
+                <CircularGaugePointer Value="100" Size="10" />
+            </CircularGaugePointers>
+
+            <CircularGaugeCenterLabel>
+                <Template>
+                    @{
+                        var pointer = context.Pointers.FirstOrDefault();
+
+                        <div style="font-weight: bold; font-size:30px">@pointer.Value</div>
+                    }
+                </Template>
+            </CircularGaugeCenterLabel>
+
+        </TelerikCircularGauge>
+    </div>*@
+
+    <div class="row my-4">
+        <TelerikArcGauge>
+            <ArcGaugePointers>
+                <ArcGaugePointer Value="@GaugeValue" />
+            </ArcGaugePointers>
+        </TelerikArcGauge>
+    </div>
+
+    <div class="row my-4">
+        <TelerikLinearGauge>
+            <LinearGaugePointers>
+                <LinearGaugePointer Value="@GaugeValue" />
+            </LinearGaugePointers>
+        </TelerikLinearGauge>
+    </div>
+
+    <div class="row my-4">
+        <TelerikRadialGauge>
+            <RadialGaugePointers>
+                <RadialGaugePointer Value="20">
+                </RadialGaugePointer>
+            </RadialGaugePointers>
+        </TelerikRadialGauge>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? ItemId { get; set; }
+
+    private double GaugeValue { get; set; } = 40;
+}

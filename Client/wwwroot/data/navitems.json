@@ -1,0 +1,78 @@
+{
+  "items": [
+    {
+      "itemId": "AutoBoxes",
+      "pageType": "Navigation",
+      "items": [
+        {
+          "itemId": "K0-3",
+          "pageType": "Navigation",
+          "items": [
+            {
+              "itemId": "MainBreaker",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub1",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub2",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub3",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub4",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub5",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub6",
+              "pageType": "EMax"
+            }
+          ]
+        },
+        {
+          "itemId": "K0-4",
+          "pageType": "Navigation",
+          "items": [
+            {
+              "itemId": "MainBreaker",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub1",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub2",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub3",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub4",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub5",
+              "pageType": "EMax"
+            },
+            {
+              "itemId": "Sub6",
+              "pageType": "EMax"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+﻿@page "/"
+
+@page "/overview"
+@page "/overview/{id:int}"
+
+@inject IHttpClientFactory ClientFactory
+@inject NavigationManager NavMan
+
+@if (deviceConfigColl is not null)
+{
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                @(deviceConfigColl.FirstOrDefault(x => x.id == Id)?.name ?? "Unknown")
+                <textarea>@Id</textarea>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="container">
+        <div class="row">
+            @foreach (var iter in deviceConfigColl.Where(x => x.parentId == Id))
+            {
+                <div class="col">
+                    @iter.name
+                </div>
+            }
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <button @onclick="OnNavButtonClickHandler">navigate</button>
+        </div>
+    </div>
+}
+
+@code{
+    private IEnumerable<DeviceConfig>? deviceConfigColl;
+
+    [Parameter]
+    public int? Id { get; set; } //initialize to the MB if there is no parameter provided
+
+    private void OnNavButtonClickHandler()
+    {
+        NavMan.NavigateTo($"navigation/AutoBoxes");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var httpClient = ClientFactory.CreateClient("WebApi");
+        BlazorAbbPoc.Shared.AbbPlcMsg? plcData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.AbbPlcMsg>("data/plcdata.json");
+
+        if (Id is null)
+        {
+            Id = 1;
+        }
+        deviceConfigColl = await httpClient.GetFromJsonAsync<IEnumerable<Shared.DeviceConfig>?>("data/config.json");
+    }
+}
