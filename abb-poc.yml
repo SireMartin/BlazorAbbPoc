@@ -1,0 +1,9 @@
+version: "2.4"
+services:
+  webapp:
+    image: abb_evci_delft:1
+    build: BlazorAbbPoc
+    environment:
+      - TZ=Europe/Brussels
+    ports:
+      - "8080:80"
