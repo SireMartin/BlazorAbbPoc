@@ -1,38 +1,12 @@
 ﻿@page "/"
 
-@page "/overview"
-@page "/overview/{id:int}"
-
-@inject IHttpClientFactory ClientFactory
 @inject NavigationManager NavMan
 
-@if (plcData is not null)
-{
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <textarea>@plcData.pActL1</textarea>
-            </div>
-        </div>
-    </div>
-}
-
 @code{
-    private BlazorAbbPoc.Shared.AbbPlcMsg? plcData;
 
-    [Parameter]
-    public int? Id { get; set; } //initialize to the MB if there is no parameter provided
-
-    private void OnNavButtonClickHandler()
+    protected override void OnInitialized()
     {
+        base.OnInitializedAsync();
         NavMan.NavigateTo($"navigation/AutoBoxes");
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        var httpClient = ClientFactory.CreateClient("WebApi");
-        plcData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.AbbPlcMsg>("data/plcdata.json");
     }
 }

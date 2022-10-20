@@ -26,6 +26,16 @@
         </ChartLegend>
     </TelerikChart>
 }
+else
+{
+    <div class="container">
+        <div class="row my-4 justify-content-center">
+            <div class="col-auto">
+                <h4>No data yet!</h4>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     public class MyDataModel
@@ -43,7 +53,14 @@
     {
         await base.OnInitializedAsync();
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-        coll = await httpClient.GetFromJsonAsync<IEnumerable<BlazorAbbPoc.Shared.ChartData>>("api/plcdata/chartdata");
-        dataColl = coll.Select(x => new MyDataModel { TimeCategory = x.timestamp, L1Voltage = x.plcMsg.l1nV, L2Voltage = x.plcMsg.l2nV, L3Voltage = x.plcMsg.l3nV });
+        try
+        {
+            coll = await httpClient.GetFromJsonAsync<IEnumerable<BlazorAbbPoc.Shared.ChartData>>("api/plcdata/chartdata");
+            dataColl = coll.Select(x => new MyDataModel { TimeCategory = x.timestamp, L1Voltage = x.plcMsg.l1nV, L2Voltage = x.plcMsg.l2nV, L3Voltage = x.plcMsg.l3nV });
+        }
+        catch(Exception e)
+        {
+            string msg = e.Message;
+        }
     }
 }
