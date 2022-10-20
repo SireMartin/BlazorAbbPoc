@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">BlazorAbbPoc</a>
+        <a class="navbar-brand" href="">ABB EVCI Delft</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -10,13 +10,13 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+            <NavLink class="nav-link" href="navigation/AutoBoxes" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Live
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="plcdata">
-                <span class="oi oi-plus" aria-hidden="true"></span> Plc Data
+            <NavLink class="nav-link" href="chart">
+                <span class="oi oi-graph" aria-hidden="true"></span> Graph
             </NavLink>
         </div>
     </nav>

@@ -3,7 +3,7 @@
     "BlazorAbbPoc.Server": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "EMax/AutoBoxes/K0-3/MainBreaker",
+      "launchUrl": "chart",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

@@ -29,7 +29,13 @@ namespace BlazorAbbPoc.Server.Controllers
         [HttpGet]
         public AbbPlcMsg Get()
         {
-            return _dataService.PlcData.FirstOrDefault().Value;
+            return _dataService.PlcData.LastOrDefault().Value;
+        }
+
+        [HttpGet("chartdata")]
+        public IEnumerable<ChartData> GetChartData()
+        {
+            return _dataService.PlcTimedData.LastOrDefault().Value.Select(x => new ChartData { timestamp = x.Item1, plcMsg = x.Item2 });
         }
     }
 }

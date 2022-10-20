@@ -1,12 +1,13 @@
-using Microsoft.AspNetCore.ResponseCompression;
 using BlazorAbbPoc.Server.Workers;
 using BlazorAbbPoc.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers().AddJsonOptions(configure =>
+{
+    configure.JsonSerializerOptions.IncludeFields = true;
+});
 builder.Services.AddRazorPages();
 
 builder.Services.AddHostedService<Worker>();
