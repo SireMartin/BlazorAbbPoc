@@ -1,61 +1,138 @@
 ﻿@page "/EMax/{*ItemId}"
 
-<h3>@ItemId</h3>
+@using System.Timers;
+
+@inject IHttpClientFactory ClientFactory
 
 <div class="container">
     <div class="row">
         <AbbBreadCrumb PageRoute="@ItemId" />
     </div>
-
-@*    <div class="row my-4">
-        <TelerikCircularGauge Width="100px" Height="100px">
-
-            <CircularGaugePointers>
-                <CircularGaugePointer Value="100" Size="10" />
-            </CircularGaugePointers>
-
-            <CircularGaugeCenterLabel>
-                <Template>
-                    @{
-                        var pointer = context.Pointers.FirstOrDefault();
-
-                        <div style="font-weight: bold; font-size:30px">@pointer.Value</div>
-                    }
-                </Template>
-            </CircularGaugeCenterLabel>
-
-        </TelerikCircularGauge>
-    </div>*@
-
-    <div class="row my-4">
-        <TelerikArcGauge>
-            <ArcGaugePointers>
-                <ArcGaugePointer Value="@GaugeValue" />
-            </ArcGaugePointers>
-        </TelerikArcGauge>
+    <div class="row justify-content-center mt-4">
+        <div class="col-auto">
+            <h3>@ItemId.Split('/').Last()</h3>
+        </div>
     </div>
-
-    <div class="row my-4">
-        <TelerikLinearGauge>
-            <LinearGaugePointers>
-                <LinearGaugePointer Value="@GaugeValue" />
-            </LinearGaugePointers>
-        </TelerikLinearGauge>
-    </div>
-
-    <div class="row my-4">
-        <TelerikRadialGauge>
-            <RadialGaugePointers>
-                <RadialGaugePointer Value="20">
-                </RadialGaugePointer>
-            </RadialGaugePointers>
-        </TelerikRadialGauge>
-    </div>
+    @if(currentPlcData is not null)
+    {
+        <div class="row my-4">
+            @*phase voltage*@
+            <div class="col col-3-lg">
+                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@currentPlcData.l1nV" PointerColor="Red" Unit="V" />
+            </div>
+            <div class="col col-3-lg">
+                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@currentPlcData.l2nV" PointerColor="Red" Unit="V" />
+            </div>
+            <div class="col col-3-lg">
+                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@currentPlcData.l3nV" PointerColor="Red" Unit="V" />
+            </div>
+            <div class="col col-3-lg">
+                <div class="d-flex flex-column justify-content-evenly h-100">
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <strong>Voltage L1-L2</strong>
+                        </div>
+                        <div>
+                            @currentPlcData.l1l2V
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <strong>Voltage L2-L3</strong>
+                        </div>
+                        <div>
+                            @currentPlcData.l2l3V
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <strong>Voltage L3-L1</strong>
+                        </div>
+                        <div>
+                            @currentPlcData.l3l1V
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-4">
+            @*current*@
+            <div class="col col-3-lg">
+                <AbbEmaxGauge MinValue="0" MaxValue="1000" GaugeValue="@currentPlcData.l1A" PointerColor="Red" Unit="A" />
+            </div>
+            <div class="col col-3-lg">
+                <AbbEmaxGauge MinValue="0" MaxValue="1000" GaugeValue="@currentPlcData.l2A" PointerColor="Red" Unit="A" />
+            </div>
+            <div class="col col-3-lg">
+                <AbbEmaxGauge MinValue="0" MaxValue="1000" GaugeValue="@currentPlcData.l3A" PointerColor="Red" Unit="A" />
+            </div>
+            <div class="col col-3-lg">
+                <div class="d-flex flex-column justify-content-evenly h-100">
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <strong>Frequency</strong>
+                        </div>
+                        <div>
+                            @currentPlcData.frq
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-4">
+            @*power*@
+            <div class="col col-3-lg">
+                <AbbEmaxGauge MinValue="0" MaxValue="1000" GaugeValue="@currentPlcData.pActTotal" PointerColor="Blue" Unit="kW" />
+            </div>
+            <div class="col col-3-lg">
+                <AbbEmaxGauge MinValue="0" MaxValue="1000" GaugeValue="@currentPlcData.pReactTotal" PointerColor="Blue" Unit="kVAr" />
+            </div>
+            <div class="col col-3-lg">
+                <AbbEmaxGauge MinValue="0" MaxValue="1000" GaugeValue="@currentPlcData.pAppTotal" PointerColor="Blue" Unit="kVA" />
+            </div>
+            <div class="col col-3-lg">
+            </div>
+        </div>
+    }
 </div>
 
 @code {
     [Parameter]
     public string? ItemId { get; set; }
 
-    private double GaugeValue { get; set; } = 40;
+    private Timer timer = new Timer();
+    public BlazorAbbPoc.Shared.AbbPlcMsg currentPlcData;
+
+    protected override void OnInitialized()
+    {
+        timer.Interval = 500;
+        timer.Elapsed += HandleTimer;
+        timer.AutoReset = true;
+        timer.Enabled = true;
+    }
+
+    private async void HandleTimer(object sender, ElapsedEventArgs e)
+    {
+        await UpdateState();
+    }
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    await base.OnInitializedAsync();
+    //    await UpdateState();
+    //}
+
+    private async Task UpdateState()
+    {
+        try
+        {
+            HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+            currentPlcData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.AbbPlcMsg>("api/plcdata");
+        }
+        catch (Exception ex)
+        {
+            string m = ex.Message;
+        }
+        StateHasChanged();
+    }
 }

@@ -1,6 +1,6 @@
 ﻿@page "/plcdata"
 @using System.Timers;
-@inject HttpClient httpClient
+@inject IHttpClientFactory ClientFactory
 
 <PageTitle>PlcData</PageTitle>
 
@@ -9,14 +9,24 @@
 <p role="status">Last mqtt data:</p>
 @if(@currentPlcData is not null)
 {
-    <p>Temp     : @currentPlcData.temperature</p>
-    <p>Pressure : @currentPlcData.pressure</p>
+    <p>Temp     : @currentPlcData.l1nV</p>
+    <p>Temp     : @currentPlcData.l2nV</p>
+    <p>Temp     : @currentPlcData.l3nV</p>
+    <p>Pressure : @currentPlcData.l1A</p>
+    <p>Pressure : @currentPlcData.l2A</p>
+    <p>Pressure : @currentPlcData.l3A</p>
+    <p>Temp     : @currentPlcData.l1l2V</p>
+    <p>Temp     : @currentPlcData.l2l3V</p>
+    <p>Temp     : @currentPlcData.l3l1V</p>
+    <p>Act      : @currentPlcData.pActTotal</p>
+    <p>Act      : @currentPlcData.pReactTotal</p>
+    <p>Act      : @currentPlcData.pAppTotal</p>
 }
 
 
 @code {
     private Timer timer = new Timer();
-    public BlazorAbbPoc.Shared.PlcData currentPlcData;
+    public BlazorAbbPoc.Shared.AbbPlcMsg currentPlcData;
 
     protected override void OnInitialized()
     {
@@ -35,7 +45,8 @@
     {
         try
         {
-            currentPlcData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.PlcData>("api/plcdata");
+            HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+            currentPlcData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.AbbPlcMsg>("api/plcdata");
         }
         catch (Exception ex)
         {

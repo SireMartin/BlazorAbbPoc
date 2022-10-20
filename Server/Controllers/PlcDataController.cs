@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BlazorAbbPoc.Shared;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorAbbPoc.Server.Controllers
 {
@@ -13,9 +14,22 @@ namespace BlazorAbbPoc.Server.Controllers
             _dataService = dataService;
         }
 
-        public Shared.PlcData? Index()
+        [HttpPost("{id}")]
+        public IActionResult Index([FromRoute] string id, [FromBody] AbbPlcMsg msg)
         {
-            return _dataService.PlcData;
+            _dataService.PlcData[id] = msg;
+            if (!_dataService.PlcTimedData.ContainsKey(id))
+            {
+                _dataService.PlcTimedData[id] = new List<(DateTime, AbbPlcMsg)>();
+             }
+            _dataService.PlcTimedData[id].Add((DateTime.Now, msg));
+            return Ok();
+        }
+
+        [HttpGet]
+        public AbbPlcMsg Get()
+        {
+            return _dataService.PlcData.FirstOrDefault().Value;
         }
     }
 }

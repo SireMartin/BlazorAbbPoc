@@ -1,5 +1,8 @@
-﻿namespace BlazorAbbPoc.Server.Services;
+﻿using BlazorAbbPoc.Shared;
+
+namespace BlazorAbbPoc.Server.Services;
 public class DataService
 {
-    public Shared.PlcData? PlcData { get; set; }
+    public Dictionary<string, List<(DateTime, AbbPlcMsg)>> PlcTimedData { get; set; } = new();
+    public Dictionary<string, AbbPlcMsg> PlcData { get; set; } = new();
 }

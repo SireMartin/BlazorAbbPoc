@@ -1,0 +1,32 @@
+﻿<TelerikArcGauge>
+    <ArcGaugeScales>
+        <ArcGaugeScale Min="@MinValue" Max="@MaxValue">
+            <ArcGaugeScaleLabels Visible="true" />
+            <ArcGaugeScaleMinorTicks Visible="true" />
+        </ArcGaugeScale>
+    </ArcGaugeScales>
+    <ArcGaugePointers>
+        <ArcGaugePointer Value="@GaugeValue" Color="@PointerColor" />
+    </ArcGaugePointers>
+    <ArcGaugeCenterLabel>
+        <Template>
+            @{
+                var pointer = context.Pointers.FirstOrDefault();
+                <div style="font-weight: bold">@pointer.Value @Unit</div>
+            }
+        </Template>
+    </ArcGaugeCenterLabel>
+</TelerikArcGauge>
+
+@code {
+    [Parameter]
+    public double MinValue { get; set; }
+    [Parameter]
+    public double MaxValue { get; set; }
+    [Parameter]
+    public double GaugeValue { get; set; }
+    [Parameter]
+    public string? PointerColor { get; set; }
+    [Parameter]
+    public string? Unit { get; set; }
+}
