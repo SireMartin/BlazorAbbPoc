@@ -1,0 +1,14 @@
+version: '3.4'
+services:
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+#    restart: always
+#    volumes:
+#      - ./data:/var/lib/postgresql/data
+#      - ./dbscripts/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    environment:
+      POSTGRES_USER: "bloguser"
+      POSTGRES_PASSWORD: "bloguser"
+      POSTGRES_DB: "blogdb"

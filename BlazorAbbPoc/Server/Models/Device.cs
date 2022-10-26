@@ -3,7 +3,7 @@
 public class Device
 {
     public int Id { get; set; }
-    public string DeviceId { get; set; }
+    public string DeviceId  { get; set; }
     public int DeviceTypeId { get; set; }
     public DeviceType DeviceType { get; set; }
     public int MaxValue { get; set; }
@@ -12,22 +12,4 @@ public class Device
     public int CabinetId { get; set; }
     public Cabinet Cabinet { get; set; }
     public int CabinetPosition { get; set; }
-}
-
-public class DeviceType
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-}
-
-public class Cabinet
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-}
-
-public class CabinetGroup
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
 }
