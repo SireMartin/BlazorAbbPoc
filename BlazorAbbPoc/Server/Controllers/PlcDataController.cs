@@ -1,4 +1,5 @@
-﻿using BlazorAbbPoc.Shared;
+﻿using BlazorAbbPoc.Server.Models;
+using BlazorAbbPoc.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorAbbPoc.Server.Controllers
@@ -21,7 +22,7 @@ namespace BlazorAbbPoc.Server.Controllers
             if (!_dataService.PlcTimedData.ContainsKey(id))
             {
                 _dataService.PlcTimedData[id] = new List<(DateTime, AbbPlcMsg)>();
-             }
+            }
             _dataService.PlcTimedData[id].Add((DateTime.Now, msg));
             return Ok();
         }
@@ -35,7 +36,17 @@ namespace BlazorAbbPoc.Server.Controllers
         [HttpGet("chartdata")]
         public IEnumerable<ChartData> GetChartData()
         {
+            if (_dataService.PlcTimedData.Count == 0)
+            {
+                return Array.Empty<ChartData>();
+            }
             return _dataService.PlcTimedData.LastOrDefault().Value.Select(x => new ChartData { timestamp = x.Item1, plcMsg = x.Item2 });
+        }
+
+        [HttpGet("blog")]
+        public IEnumerable<Device> GetAllBlogs([FromServices] ApiDbContext apiDbContext)
+        {
+            return apiDbContext.Devices.Select(x => x);
         }
     }
 }

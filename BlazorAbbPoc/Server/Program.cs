@@ -1,5 +1,7 @@
 using BlazorAbbPoc.Server.Workers;
 using BlazorAbbPoc.Server.Services;
+using Microsoft.EntityFrameworkCore;
+using BlazorAbbPoc.Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddSingleton<DataService>();
+
+builder.Services.AddDbContext<ApiDbContext>(options => options.UseNpgsql("host=localhost;port=5432;database=blogdb;username=bloguser;password=bloguser"));
 
 var app = builder.Build();
 
