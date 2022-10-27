@@ -23,6 +23,7 @@ public class ApiDbContext : DbContext
         {
             entityBuilder.HasKey(e => e.Id);
             entityBuilder.ToTable("devices");
+            entityBuilder.HasIndex(e => e.DeviceId).IsUnique();
 
             entityBuilder.Property(e => e.Id).HasColumnName("id");
             entityBuilder.Property(e => e.DeviceId).HasColumnName("device_id");

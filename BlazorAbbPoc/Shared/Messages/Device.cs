@@ -3,7 +3,7 @@
 public class Device
 {
     public int Id { get; set; }
-    public string? DeviceId { get; set; }
+    public string DeviceId { get; set; }
     public int DeviceTypeId { get; set; }
     public int CabinetId { get; set; }
     public int CabinetGroupId { get; set; }

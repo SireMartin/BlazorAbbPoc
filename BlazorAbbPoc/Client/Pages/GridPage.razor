@@ -144,6 +144,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
         Devices = await httpClient.GetFromJsonAsync<IEnumerable<Device>>("api/Device/devices");
         DeviceTypes = await httpClient.GetFromJsonAsync<IEnumerable<DeviceType>>("api/Device/devicetypes");
@@ -161,26 +166,31 @@ else
         };
     }
 
-    public void UpdateHandler(GridCommandEventArgs args)
+    public async Task UpdateHandler(GridCommandEventArgs args)
     {
-        //var product = (ProductDto)args.Item;
-        //product.CategoryName = Categories.FirstOrDefault(c => c.CategoryId == product.CategoryId)?.CategoryName;
-        //ProductService.UpdateProduct(product);
-        //LoadData();
+        var device = (Device)args.Item;
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        HttpResponseMessage respMsg = await httpClient.PutAsJsonAsync("api/Device/device", device);
+        await LoadData();
+        StateHasChanged();
     }
 
-    public void DeleteHandler(GridCommandEventArgs args)
+    public async Task DeleteHandler(GridCommandEventArgs args)
     {
-        //ProductService.DeleteProduct((ProductDto)args.Item);
-        //LoadData();
+        var device = (Device)args.Item;
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        HttpResponseMessage respMsg = await httpClient.DeleteAsync($"api/Device/device/{device.Id}");
+        await LoadData();
+        StateHasChanged();
     }
 
-    public void CreateHandler(GridCommandEventArgs args)
+    public async Task CreateHandler(GridCommandEventArgs args)
     {
-        //var product = (ProductDto)args.Item;
-        //product.CategoryName = Categories.FirstOrDefault(c => c.CategoryId == product.CategoryId)?.CategoryName;
-        //ProductService.CreateProduct(product);
-        //LoadData();
+        var device = (Device)args.Item;
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        HttpResponseMessage respMsg = await httpClient.PostAsJsonAsync("api/Device/device", device);
+        await LoadData();
+        StateHasChanged();
     }
 
     public List<int?> GetFilterValues(CompositeFilterDescriptor filterDescriptor)
