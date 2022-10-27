@@ -1,4 +1,4 @@
-﻿@page "/grid"
+﻿@page "/DeviceConfig"
 
 @using Telerik.DataSource;
 @using BlazorAbbPoc.Shared.Messages
@@ -21,12 +21,12 @@
              Reorderable="true"
              EditMode="GridEditMode.Popup"
              SelectionMode="GridSelectionMode.Multiple"
-             OnStateInit="@((GridStateEventArgs<Device> args) => OnStateInit(args))"
+             OnStateInit="@((GridStateEventArgs<DeviceDto> args) => OnStateInit(args))"
              PageSize="10"
              Navigable="true">
     <GridColumns>
         <GridCheckboxColumn></GridCheckboxColumn>
-        <GridColumn Field="@nameof(Device.DeviceId)" Title="Device Id" Width="195px" />
+        <GridColumn Field="@nameof(DeviceDto.DeviceId)" Title="Device Id" Width="195px" />
         @*<GridColumn Field="@nameof(ProductDto.UnitPrice)" Width="120px" Title="Cost" TextAlign="@ColumnTextAlign.Right">
             <Template>
                 @((context as ProductDto).UnitPrice.GetValueOrDefault().ToString("C2"))
@@ -48,10 +48,10 @@
                 }
             </Template>
         </GridColumn>*@
-        <GridColumn Field="@nameof(Device.DeviceTypeId)" Title="DeviceType" Width="140px">
+        <GridColumn Field="@nameof(DeviceDto.DeviceTypeId)" Title="DeviceType" Width="140px">
             <Template>
                 @{
-                    var device = context as Device;
+                    var device = context as DeviceDto;
                     var categoryName = DeviceTypes.FirstOrDefault(c => c.Id == device.DeviceTypeId)?.Name;
                     @categoryName
                     ;
@@ -59,7 +59,7 @@
             </Template>
             <EditorTemplate>
                 @{
-                    var device = context as Device;
+                    var device = context as DeviceDto;
                     <TelerikDropDownList Data="@DeviceTypes"
                                          @bind-Value="@device.DeviceTypeId"
                                      DefaultText="Choose DeviceType"
@@ -121,15 +121,15 @@
                 </TelerikProgressBar>
             </Template>
         </GridColumn>*@
-        <GridColumn Field="@nameof(Device.MaxValue)" Title="Max Value" Width="200px" />
-        <GridColumn Field="@nameof(Device.CabinetPosition)" Title="Cabinet Position" Width="200px" />
+        <GridColumn Field="@nameof(DeviceDto.MaxValue)" Title="Max Value" Width="200px" />
+        <GridColumn Field="@nameof(DeviceDto.CabinetPosition)" Title="Cabinet Position" Width="200px" />
         <GridCommandColumn Width="190px">
             <GridCommandButton Command="Edit" Icon="edit" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
             <GridCommandButton Command="Delete" Icon="delete">Delete</GridCommandButton>
         </GridCommandColumn>
     </GridColumns>
     <GridToolBar>
-        <GridCommandButton Command="Add" Icon="add">Add Product</GridCommandButton>
+        <GridCommandButton Command="Add" Icon="add">Add Device</GridCommandButton>
     </GridToolBar>
     </TelerikGrid>
 }
@@ -139,8 +139,8 @@ else
 }
 
 @code {
-    public IEnumerable<Device>? Devices { get; set; }
-    public IEnumerable<DeviceType>? DeviceTypes { get; set; }
+    public IEnumerable<DeviceDto>? Devices { get; set; }
+    public IEnumerable<DeviceTypeDto>? DeviceTypes { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -150,17 +150,17 @@ else
     private async Task LoadData()
     {
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-        Devices = await httpClient.GetFromJsonAsync<IEnumerable<Device>>("api/Device/devices");
-        DeviceTypes = await httpClient.GetFromJsonAsync<IEnumerable<DeviceType>>("api/Device/devicetypes");
+        Devices = await httpClient.GetFromJsonAsync<IEnumerable<DeviceDto>>("api/Device/devices");
+        DeviceTypes = await httpClient.GetFromJsonAsync<IEnumerable<DeviceTypeDto>>("api/Device/devicetypes");
     }
 
-    private void OnStateInit(GridStateEventArgs<Device> args)
+    private void OnStateInit(GridStateEventArgs<DeviceDto> args)
     {
         args.GridState.GroupDescriptors = new List<GroupDescriptor>()
         {
             new GroupDescriptor()
             {
-                Member = nameof(Device.DeviceTypeId),
+                Member = nameof(DeviceDto.DeviceTypeId),
                 MemberType = typeof(int)
             }
         };
@@ -168,7 +168,7 @@ else
 
     public async Task UpdateHandler(GridCommandEventArgs args)
     {
-        var device = (Device)args.Item;
+        var device = (DeviceDto)args.Item;
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
         HttpResponseMessage respMsg = await httpClient.PutAsJsonAsync("api/Device/device", device);
         await LoadData();
@@ -177,7 +177,7 @@ else
 
     public async Task DeleteHandler(GridCommandEventArgs args)
     {
-        var device = (Device)args.Item;
+        var device = (DeviceDto)args.Item;
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
         HttpResponseMessage respMsg = await httpClient.DeleteAsync($"api/Device/device/{device.Id}");
         await LoadData();
@@ -186,7 +186,7 @@ else
 
     public async Task CreateHandler(GridCommandEventArgs args)
     {
-        var device = (Device)args.Item;
+        var device = (DeviceDto)args.Item;
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
         HttpResponseMessage respMsg = await httpClient.PostAsJsonAsync("api/Device/device", device);
         await LoadData();
@@ -206,7 +206,7 @@ else
 
         if (value && filter == null)
         {
-            filterDescriptor.FilterDescriptors.Add(new FilterDescriptor(nameof(Device.DeviceTypeId), FilterOperator.IsEqualTo, deviceTypeId));
+            filterDescriptor.FilterDescriptors.Add(new FilterDescriptor(nameof(DeviceDto.DeviceTypeId), FilterOperator.IsEqualTo, deviceTypeId));
         }
         else if (!value && filter != null)
         {

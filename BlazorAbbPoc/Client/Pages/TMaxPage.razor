@@ -1,0 +1,23 @@
+﻿@page "/TMax/{*ItemId}"
+
+@using System.Timers;
+
+@inject IHttpClientFactory ClientFactory
+
+<div class="container">
+    <div class="row">
+        <AbbBreadCrumb PageRoute="@ItemId" />
+    </div>
+    <div class="row justify-content-center mt-4">
+        <div class="col-auto">
+            <h3>@ItemId.Split('/').Last()</h3>
+        </div>
+    </div>
+</div>
+
+<h3>De TMax pagina moet nog gemaakt worden</h3>
+
+@code {
+    [Parameter]
+    public string? ItemId { get; set; }
+}

@@ -23,13 +23,13 @@ public class ApiDbContext : DbContext
         {
             entityBuilder.HasKey(e => e.Id);
             entityBuilder.ToTable("devices");
-            entityBuilder.HasIndex(e => e.DeviceId).IsUnique();
+            entityBuilder.HasIndex(e => e.PlcDeviceId).IsUnique();
 
             entityBuilder.Property(e => e.Id).HasColumnName("id");
-            entityBuilder.Property(e => e.DeviceId).HasColumnName("device_id");
+            entityBuilder.Property(e => e.Name).HasColumnName("name");
+            entityBuilder.Property(e => e.PlcDeviceId).HasColumnName("plc_device_id");
             entityBuilder.Property(e => e.DeviceTypeId).HasColumnName("devicetype_id");
             entityBuilder.Property(e => e.MaxValue).HasColumnName("max_value");
-            entityBuilder.Property(e => e.CabinetGroupId).HasColumnName("cabinetgroup_id");
             entityBuilder.Property(e => e.CabinetId).HasColumnName("cabinet_id");
             entityBuilder.Property(e => e.CabinetPosition).HasColumnName("cabinet_position");
         });
@@ -38,6 +38,7 @@ public class ApiDbContext : DbContext
         {
             entityBuilder.HasKey(e => e.Id);
             entityBuilder.ToTable("devicetypes");
+            entityBuilder.HasIndex(e => e.Name).IsUnique();
 
             entityBuilder.Property(e => e.Id).HasColumnName("id");
             entityBuilder.Property(e => e.Name).HasColumnName("name");
@@ -47,15 +48,18 @@ public class ApiDbContext : DbContext
         {
             entityBuilder.HasKey(e => e.Id);
             entityBuilder.ToTable("cabinets");
+            entityBuilder.HasIndex(e => e.Name).IsUnique();
 
             entityBuilder.Property(e => e.Id).HasColumnName("id");
             entityBuilder.Property(e => e.Name).HasColumnName("name");
+            entityBuilder.Property(e => e.CabinetGroupId).HasColumnName("cabinetgroup_id");
         });
 
         builder.Entity<CabinetGroup>(entityBuilder =>
         {
             entityBuilder.HasKey(e => e.Id);
             entityBuilder.ToTable("cabinetgroups");
+            entityBuilder.HasIndex(e => e.Name).IsUnique();
 
             entityBuilder.Property(e => e.Id).HasColumnName("id");
             entityBuilder.Property(e => e.Name).HasColumnName("name");

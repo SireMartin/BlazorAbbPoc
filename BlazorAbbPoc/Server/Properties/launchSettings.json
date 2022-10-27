@@ -3,7 +3,7 @@
     "BlazorAbbPoc.Server": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "grid",
+      "launchUrl": "DeviceConfig",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

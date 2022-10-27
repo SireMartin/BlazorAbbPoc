@@ -2,6 +2,7 @@
 using BlazorAbbPoc.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorAbbPoc.Server.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221027100017_cabinet.cabinetgroup_id_not_nullable")]
+    partial class cabinetcabinetgroup_id_not_nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,18 +103,13 @@ namespace BlazorAbbPoc.Server.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<string>("PlcDeviceId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("plc_device_id");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CabinetId");
 
                     b.HasIndex("DeviceTypeId");
 
-                    b.HasIndex("PlcDeviceId")
+                    b.HasIndex("Name")
                         .IsUnique();
 
                     b.ToTable("devices", (string)null);
