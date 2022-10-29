@@ -1,7 +1,20 @@
 insert into cabinetgroups (name) values ('AutoBoxes');
+insert into cabinetgroups (name) values ('AC Terrein chargers');
+insert into cabinetgroups (name) values ('Bus Charger');
+insert into cabinetgroups (name) values ('DC Hi-Power chargers');
+insert into cabinetgroups (name) values ('Simulation Labs');
+
 
 insert into cabinets (name, cabinetgroup_id) values ('K0-3', 1);
 insert into cabinets (name, cabinetgroup_id) values ('K0-4', 1);
+insert into cabinets (name, cabinetgroup_id) values ('A0-3', 2);
+insert into cabinets (name, cabinetgroup_id) values ('A0-4', 2);
+insert into cabinets (name, cabinetgroup_id) values ('B0-3', 3);
+insert into cabinets (name, cabinetgroup_id) values ('B0-4', 3);
+insert into cabinets (name, cabinetgroup_id) values ('D0-3', 4);
+insert into cabinets (name, cabinetgroup_id) values ('D0-4', 4);
+insert into cabinets (name, cabinetgroup_id) values ('S0-3', 5);
+insert into cabinets (name, cabinetgroup_id) values ('S0-4', 5);
 
 insert into devicetypes (name) values ('EMax');
 insert into devicetypes (name) values ('TMax');

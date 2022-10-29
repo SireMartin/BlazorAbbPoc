@@ -19,12 +19,14 @@ namespace BlazorAbbPoc.Server.Controllers
         [HttpGet("devices")]
         public IEnumerable<DeviceDto> GetAllDevices()
         {
-            return _dbContext.Devices.Select(x => new DeviceDto
+            return _dbContext.Devices.Include(x => x.Cabinet).Select(x => new DeviceDto
             {
                 Id = x.Id,
                 DeviceId = x.PlcDeviceId,
                 DeviceTypeId = x.DeviceTypeId,
                 CabinetId = x.CabinetId,
+                //cabinet group id is only provided in the get call dto, but not part of the device model
+                CabinetGroupId = x.Cabinet.CabinetGroupId,
                 CabinetPosition = x.CabinetPosition,
                 MaxValue = x.MaxValue
             });
@@ -48,6 +50,7 @@ namespace BlazorAbbPoc.Server.Controllers
             {
                 return NotFound();
             }
+            //no cabinet group id
             dbDevice.MaxValue = device.MaxValue;
             dbDevice.PlcDeviceId = device.DeviceId;
             dbDevice.DeviceTypeId = device.DeviceTypeId;
@@ -123,27 +126,28 @@ namespace BlazorAbbPoc.Server.Controllers
                     })
                 })
             };
-
-            //foreach (Device iterDevice in _dbContext.Devices.Include(dev => dev.Cabinet).ThenInclude(cab => cab.CabinetGroup).Include(dev => dev.DeviceTypeId))
-            //{
-
-            //}
-
-            //foreach (CabinetGroup iterCabinetGroup in _dbContext.CabinetGroups)
-            //{
-            //    NavItemDto cabinetGroupNavItem = new NavItemDto { itemId = iterCabinetGroup.Name, pageType = "Navigation" };
-            //    rootNavItem.items.Add(cabinetGroupNavItem);
-            //    foreach (Cabinet iterCabinet in _dbContext.Cabinets.Where(x => x.CabinetGroupId == iterCabinetGroup.Id))
-            //    {
-            //        NavItemDto cabinetNavItem = new NavItemDto { itemId = iterCabinet.Name, pageType = "Navigation" };
-            //        cabinetGroupNavItem.items.Add(cabinetNavItem);
-            //        foreach (Device iterDevice in _dbContext.Devices.Include(x => x.DeviceTypeId).Where(x => x.CabinetId == iterCabinet.Id))
-            //        {
-            //            cabinetNavItem.items.Add(new NavItemDto { itemId = iterDevice.PlcDeviceId, pageType = iterDevice.DeviceType.Name });
-            //        }
-            //    }
-            //}
             return rootNavItem;
+        }
+
+        [HttpGet("cabinets")]
+        public IEnumerable<CabinetDto> GetAllCabinets()
+        {
+            return _dbContext.Cabinets.Select(x => new CabinetDto
+            {
+                Id = x.Id,
+                CabinetGroupId = x.CabinetGroupId,
+                Name = x.Name
+            });
+        }
+
+        [HttpGet("cabinetgroups")]
+        public IEnumerable<CabinetGroupDto> GetAllCabinetGroups()
+        {
+            return _dbContext.CabinetGroups.Select(x => new CabinetGroupDto
+            {
+                Id = x.Id,
+                Name = x.Name
+            });
         }
     }
 }

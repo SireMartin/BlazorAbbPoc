@@ -27,27 +27,7 @@
     <GridColumns>
         <GridCheckboxColumn></GridCheckboxColumn>
         <GridColumn Field="@nameof(DeviceDto.DeviceId)" Title="Device Id" Width="195px" />
-        @*<GridColumn Field="@nameof(ProductDto.UnitPrice)" Width="120px" Title="Cost" TextAlign="@ColumnTextAlign.Right">
-            <Template>
-                @((context as ProductDto).UnitPrice.GetValueOrDefault().ToString("C2"))
-            </Template>
-        </GridColumn>
-        <GridColumn Field="@nameof(ProductDto.Discontinued)" Width="135px" Title="Discontinued" Editable="false" TextAlign="@ColumnTextAlign.Center">
-            <Template>
-                @{
-                    var product = context as ProductDto;
 
-                    if (product.Discontinued.GetValueOrDefault())
-                    {
-                        <span class="k-badge k-badge-md k-badge-solid k-badge-solid-error k-rounded-md">Discontinued</span>
-                    }
-                    else
-                    {
-                        <span class="k-badge k-badge-md k-badge-solid k-badge-solid-success k-rounded-md">Available</span>
-                    }
-                }
-            </Template>
-        </GridColumn>*@
         <GridColumn Field="@nameof(DeviceDto.DeviceTypeId)" Title="DeviceType" Width="140px">
             <Template>
                 @{
@@ -99,28 +79,70 @@
                 }
             </GroupHeaderTemplate>
         </GridColumn>
-        @*<GridColumn Field="@nameof(ProductDto.UnitsInStock)" Title="In Stock" Width="170px">
+
+        <GridColumn Field="@nameof(DeviceDto.CabinetId)" Title="Cabinet" Width="140px">
             <Template>
                 @{
-                    var product = context as ProductDto;
-                    var value = product.UnitsInStock.GetValueOrDefault();
+                    var device = context as DeviceDto;
+                    var categoryName = Cabinets.FirstOrDefault(c => c.Id == device.CabinetId)?.Name;
+                    @categoryName
+                    ;
                 }
-                <TelerikProgressBar Class="width-100" Max="125" Value="(double)value">
-                    <ProgressBarLabel Visible="true" Position="@ProgressBarLabelPosition.Center">
-                        <Template Context="progressBarContext">
-                            @if (value > 125)
-                            {
-                                <span style="font-weight:bold">Over 125 in stock</span>
-                            }
-                            else
-                            {
-                                <span>In stock:<span style="font-weight:bold">@(progressBarContext.Value)</span></span>
-                            }
-                        </Template>
-                    </ProgressBarLabel>
-                </TelerikProgressBar>
             </Template>
-        </GridColumn>*@
+            <EditorTemplate>
+                @{
+                    var device = context as DeviceDto;
+                        <TelerikDropDownList Data="@CabinetsWithCabinetGroupName"
+                                        @bind-Value="@device.CabinetId"
+                                    DefaultText="Choose Cabinet"
+                                    TextField="Name"
+                                    ValueField="Id">
+                    </TelerikDropDownList>
+                }
+            </EditorTemplate>
+            <FilterMenuTemplate>
+                @{
+                    <div class="filter-values-container">
+                        @foreach (var cabinet in Cabinets)
+                        {
+                            <div>
+                                <TelerikCheckBox Value="@(GetFilterValues(context.FilterDescriptor).Contains(cabinet.Id))"
+                                        ValueChanged="@((bool value) => ColumnValueChanged(value, cabinet.Id, context.FilterDescriptor))"
+                                        Id="@($"name_{cabinet.Id}")">
+                                </TelerikCheckBox>
+                                <label for="@($"name_{cabinet.Id}")">
+                                    @cabinet.Name
+                                </label>
+                            </div>
+                        }
+                    </div>
+                }
+            </FilterMenuTemplate>
+            <GroupHeaderTemplate>
+                @{
+                    if (context.Value != null)
+                    {
+                        <span>Category: @Cabinets.FirstOrDefault(c => c.Id == (int)context.Value).Name</span>
+                    }
+                    else
+                    {
+                        <span>No Category</span>
+                    }
+                }
+            </GroupHeaderTemplate>
+        </GridColumn>
+
+        <GridColumn Field="@nameof(DeviceDto.CabinetGroupId)" Title="CabinetGroup" Editable="false" Width="140px">
+            <Template>
+                @{
+                    var device = context as DeviceDto;
+                    var categoryName = CabinetGroups.FirstOrDefault(c => c.Id == device.CabinetGroupId)?.Name;
+                    @categoryName
+                    ;
+                }
+            </Template>
+        </GridColumn>
+
         <GridColumn Field="@nameof(DeviceDto.MaxValue)" Title="Max Value" Width="200px" />
         <GridColumn Field="@nameof(DeviceDto.CabinetPosition)" Title="Cabinet Position" Width="200px" />
         <GridCommandColumn Width="190px">
@@ -139,8 +161,13 @@ else
 }
 
 @code {
-    public IEnumerable<DeviceDto>? Devices { get; set; }
-    public IEnumerable<DeviceTypeDto>? DeviceTypes { get; set; }
+    private IEnumerable<DeviceDto>? Devices { get; set; }
+    private IEnumerable<DeviceTypeDto>? DeviceTypes { get; set; }
+    private IEnumerable<CabinetDto>? Cabinets { get; set; }
+    private IEnumerable<CabinetGroupDto>? CabinetGroups { get; set; }
+    //cacluated field on the join of Cabinets and CabinetGroups
+    private IEnumerable<CabinetDto>? CabinetsWithCabinetGroupName { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -152,6 +179,9 @@ else
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
         Devices = await httpClient.GetFromJsonAsync<IEnumerable<DeviceDto>>("api/Device/devices");
         DeviceTypes = await httpClient.GetFromJsonAsync<IEnumerable<DeviceTypeDto>>("api/Device/devicetypes");
+        Cabinets = await httpClient.GetFromJsonAsync<IEnumerable<CabinetDto>>("api/Device/cabinets");
+        CabinetGroups = await httpClient.GetFromJsonAsync<IEnumerable<CabinetGroupDto>>("api/Device/cabinetgroups");
+        CabinetsWithCabinetGroupName = Cabinets.Join(CabinetGroups, c => c.CabinetGroupId, cg => cg.Id, (c, cg) => new CabinetDto { Id = c.Id, Name = $"{c.Name} ({cg.Name})" });
     }
 
     private void OnStateInit(GridStateEventArgs<DeviceDto> args)
