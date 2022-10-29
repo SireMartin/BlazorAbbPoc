@@ -22,6 +22,7 @@ namespace BlazorAbbPoc.Server.Controllers
             return _dbContext.Devices.Include(x => x.Cabinet).Select(x => new DeviceDto
             {
                 Id = x.Id,
+                Name = x.Name,
                 DeviceId = x.PlcDeviceId,
                 DeviceTypeId = x.DeviceTypeId,
                 CabinetId = x.CabinetId,
@@ -52,6 +53,7 @@ namespace BlazorAbbPoc.Server.Controllers
             }
             //no cabinet group id
             dbDevice.MaxValue = device.MaxValue;
+            dbDevice.Name = device.Name;
             dbDevice.PlcDeviceId = device.DeviceId;
             dbDevice.DeviceTypeId = device.DeviceTypeId;
             dbDevice.CabinetId = device.CabinetId;
@@ -61,7 +63,7 @@ namespace BlazorAbbPoc.Server.Controllers
         }
 
         [HttpDelete("device/{id:int}")]
-        public async Task<IActionResult> UpdateDevice([FromRoute] int id)
+        public async Task<IActionResult> DeleteDevice([FromRoute] int id)
         {
             Device? dbDevice = await _dbContext.Devices.FirstOrDefaultAsync(x => x.Id == id);
             if (dbDevice is null)
@@ -86,6 +88,7 @@ namespace BlazorAbbPoc.Server.Controllers
             Device dbDevice = new Device
             {
                 MaxValue = device.MaxValue,
+                Name = device.Name,
                 PlcDeviceId = device.DeviceId,
                 DeviceTypeId = device.DeviceTypeId,
                 //todo: implement

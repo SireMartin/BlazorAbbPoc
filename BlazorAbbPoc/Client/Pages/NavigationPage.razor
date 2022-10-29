@@ -1,6 +1,8 @@
 ﻿@page "/Navigation/{*pageRoute}"
 
 @using System.Text.Json
+@using BlazorAbbPoc.Client.Data;
+@using BlazorAbbPoc.Client.Store.Actions;
 @using Fluxor
 @using BlazorAbbPoc.Client.Store
 
@@ -8,6 +10,8 @@
 
 @inject IState<NavigationConfigurationState> NavConfigState
 @inject NavigationManager NavMan
+@inject IHttpClientFactory ClientFactory
+@inject IDispatcher Dispatcher
 
 <h3>@PageRoute</h3>
 
@@ -50,6 +54,14 @@
 @code {
     [Parameter]
     public string? PageRoute { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        NavItem? navConfig = await httpClient.GetFromJsonAsync<NavItem>("api/Device/navigation");
+        Dispatcher.Dispatch(new NavigationConfigurationChangedAction(navConfig));
+    }
 
     private void ButtonClickHandler(string argPageType, string argItemId)
     {

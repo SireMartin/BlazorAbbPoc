@@ -3,6 +3,7 @@
 public class DeviceDto
 {
     public int Id { get; set; }
+    public string Name { get; set; }
     public string DeviceId { get; set; }
     public int DeviceTypeId { get; set; }
     public int CabinetId { get; set; }

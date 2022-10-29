@@ -1,4 +1,4 @@
-﻿@using Fluxor;
+﻿@*@using Fluxor;
 @using BlazorAbbPoc.Client.Data;
 @using BlazorAbbPoc.Client.Store;
 @using BlazorAbbPoc.Client.Store.Actions;
@@ -6,13 +6,15 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorLayout
 
 @inject IHttpClientFactory ClientFactory
-@inject IDispatcher Dispatcher
+@inject IDispatcher Dispatcher*@
+
+@inherits LayoutComponentBase
 
 <TelerikRootComponent>
     @Body
 </TelerikRootComponent>
 
-@code {
+@*@code {
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -20,4 +22,4 @@
         NavItem? navConfig = await httpClient.GetFromJsonAsync<NavItem>("api/Device/navigation");
         Dispatcher.Dispatch(new NavigationConfigurationChangedAction(navConfig));
     }
-}
+}*@
