@@ -1,5 +1,6 @@
 ﻿using BlazorAbbPoc.Server.Models;
 using BlazorAbbPoc.Shared;
+using BlazorAbbPoc.Shared.Plc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorAbbPoc.Server.Controllers

@@ -111,24 +111,22 @@ namespace BlazorAbbPoc.Server.Controllers
         [HttpGet("navigation")]
         public NavItemDto GetNavigationInfo()
         {
-            NavItemDto rootNavItem = new NavItemDto
+            NavItemDto rootNavItem = new NavItemDto { itemId = "LV01" };
+            rootNavItem.items = _dbContext.CabinetGroups.Include(cg => cg.Cabinets).ThenInclude(c => c.Devices).ThenInclude(d => d.DeviceType).Select(cg => new NavItemDto
             {
-                items = _dbContext.CabinetGroups.Include(cg => cg.Cabinets).ThenInclude(c => c.Devices).ThenInclude(d => d.DeviceType).Select(cg => new NavItemDto
+                itemId = cg.Name,
+                pageType = "Navigation",
+                items = cg.Cabinets.Select(c => new NavItemDto
                 {
-                    itemId = cg.Name,
+                    itemId = c.Name,
                     pageType = "Navigation",
-                    items = cg.Cabinets.Select(c => new NavItemDto
+                    items = c.Devices.Select(d => new NavItemDto
                     {
-                        itemId = c.Name,
-                        pageType = "Navigation",
-                        items = c.Devices.Select(d => new NavItemDto
-                        {
-                            itemId = d.Name,
-                            pageType = d.DeviceType.Name
-                        })
+                        itemId = d.Name,
+                        pageType = d.DeviceType.Name
                     })
                 })
-            };
+            });
             return rootNavItem;
         }
 

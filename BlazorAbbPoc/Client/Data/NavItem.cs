@@ -16,6 +16,13 @@ public class NavItem
             hierarchicalItemId = argParentItemId is null ? itemId : $"{argParentItemId}/{itemId}";
             argColl[hierarchicalItemId] = (items ?? Array.Empty<NavItem>()).Select(x => new NavItem { itemId = $"{hierarchicalItemId}/{x.itemId}", pageType = x.pageType }).ToArray();
         }
+        //else
+        //{
+        //    foreach (var item in items)
+        //    {
+        //        argColl["root"] = (items ?? Array.Empty<NavItem>()).Select(x => new NavItem { itemId = x.itemId, pageType = "navigation" }).ToArray();
+        //    }
+        //}
         foreach (var item in items ?? Array.Empty<NavItem>())
         {
             item.FillItems(argColl, hierarchicalItemId);

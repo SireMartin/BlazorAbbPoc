@@ -1,4 +1,6 @@
-﻿namespace BlazorAbbPoc.Shared;
+﻿using BlazorAbbPoc.Shared.Plc;
+
+namespace BlazorAbbPoc.Shared;
 
 public class ChartData
 {

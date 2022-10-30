@@ -1,4 +1,4 @@
-﻿using BlazorAbbPoc.Shared;
+﻿using BlazorAbbPoc.Shared.Plc;
 
 namespace BlazorAbbPoc.Server.Services;
 public class DataService

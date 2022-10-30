@@ -1,6 +1,7 @@
 ﻿@page "/EMax/{*ItemId}"
 
 @using System.Timers;
+@using BlazorAbbPoc.Shared.Plc;
 
 @inject IHttpClientFactory ClientFactory
 
@@ -109,7 +110,7 @@
     public string? ItemId { get; set; }
 
     private Timer timer = new Timer();
-    public BlazorAbbPoc.Shared.AbbPlcMsg currentPlcData;
+    public AbbPlcMsg currentPlcData;
 
     protected override void OnInitialized()
     {
@@ -135,7 +136,7 @@
         try
         {
             HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-            currentPlcData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.AbbPlcMsg>("api/plcdata");
+            currentPlcData = await httpClient.GetFromJsonAsync<AbbPlcMsg>("api/plcdata");
         }
         catch (Exception ex)
         {

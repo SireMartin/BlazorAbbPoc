@@ -142,6 +142,36 @@
                     ;
                 }
             </Template>
+            <FilterMenuTemplate>
+                @{
+                    <div class="filter-values-container">
+                        @foreach (var cabinetGroup in CabinetGroups)
+                        {
+                            <div>
+                                <TelerikCheckBox Value="@(GetFilterValues(context.FilterDescriptor).Contains(cabinetGroup.Id))"
+                                        ValueChanged="@((bool value) => ColumnValueChanged(value, cabinetGroup.Id, context.FilterDescriptor))"
+                                        Id="@($"name_{cabinetGroup.Id}")">
+                                </TelerikCheckBox>
+                                <label for="@($"name_{cabinetGroup.Id}")">
+                                    @cabinetGroup.Name
+                                </label>
+                            </div>
+                        }
+                    </div>
+                }
+            </FilterMenuTemplate>
+            <GroupHeaderTemplate>
+                @{
+                    if (context.Value != null)
+                    {
+                        <span>Category: @CabinetGroups.FirstOrDefault(c => c.Id == (int)context.Value).Name</span>
+                    }
+                    else
+                    {
+                        <span>No Category</span>
+                    }
+                }
+            </GroupHeaderTemplate>
         </GridColumn>
 
         <GridColumn Field="@nameof(DeviceDto.MaxValue)" Title="Max Value" Width="200px" />
