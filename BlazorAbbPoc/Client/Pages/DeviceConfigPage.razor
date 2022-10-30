@@ -1,11 +1,13 @@
-﻿@page "/DeviceConfig"
+﻿@page "/Configuration/Device"
 
 @using Telerik.DataSource;
 @using BlazorAbbPoc.Shared.Messages
 
 @inject IHttpClientFactory ClientFactory
 
-@if(DeviceTypes is not null && Devices is not null)
+<TelerikBreadcrumb Data="@(new Shared.BreadCrumbItem[] {new BreadCrumbItem {Text = "Configuration", Url= "Configuration"}, new BreadCrumbItem {Text = "Device", Url= "Configuration/Device"}})" />
+
+@if(DeviceTypes is not null && Devices is not null && Cabinets is not null && CabinetGroups is not null && CabinetsWithCabinetGroupName is not null)
 {
 
 <TelerikGrid Data=@Devices
@@ -71,11 +73,11 @@
                 @{
                     if (context.Value != null)
                     {
-                        <span>Category: @DeviceTypes.FirstOrDefault(c => c.Id == (int)context.Value).Name</span>
+                        <span>DeviceType: @DeviceTypes.FirstOrDefault(c => c.Id == (int)context.Value).Name</span>
                     }
                     else
                     {
-                        <span>No Category</span>
+                        <span>No DeviceType</span>
                     }
                 }
             </GroupHeaderTemplate>
@@ -123,11 +125,11 @@
                 @{
                     if (context.Value != null)
                     {
-                        <span>Category: @Cabinets.FirstOrDefault(c => c.Id == (int)context.Value).Name</span>
+                        <span>Cabinet: @Cabinets.FirstOrDefault(c => c.Id == (int)context.Value).Name</span>
                     }
                     else
                     {
-                        <span>No Category</span>
+                        <span>No Cabinet</span>
                     }
                 }
             </GroupHeaderTemplate>
@@ -164,11 +166,11 @@
                 @{
                     if (context.Value != null)
                     {
-                        <span>Category: @CabinetGroups.FirstOrDefault(c => c.Id == (int)context.Value).Name</span>
+                        <span>CabinetGroup: @CabinetGroups.FirstOrDefault(c => c.Id == (int)context.Value).Name</span>
                     }
                     else
                     {
-                        <span>No Category</span>
+                        <span>No CabinetGroup</span>
                     }
                 }
             </GroupHeaderTemplate>
@@ -208,10 +210,10 @@ else
     private async Task LoadData()
     {
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-        Devices = await httpClient.GetFromJsonAsync<IEnumerable<DeviceDto>>("api/Device/devices");
-        DeviceTypes = await httpClient.GetFromJsonAsync<IEnumerable<DeviceTypeDto>>("api/Device/devicetypes");
-        Cabinets = await httpClient.GetFromJsonAsync<IEnumerable<CabinetDto>>("api/Device/cabinets");
-        CabinetGroups = await httpClient.GetFromJsonAsync<IEnumerable<CabinetGroupDto>>("api/Device/cabinetgroups");
+        Devices = await httpClient.GetFromJsonAsync<IEnumerable<DeviceDto>>("api/Config/devices");
+        DeviceTypes = await httpClient.GetFromJsonAsync<IEnumerable<DeviceTypeDto>>("api/Config/devicetypes");
+        Cabinets = await httpClient.GetFromJsonAsync<IEnumerable<CabinetDto>>("api/Config/cabinets");
+        CabinetGroups = await httpClient.GetFromJsonAsync<IEnumerable<CabinetGroupDto>>("api/Config/cabinetgroups");
         CabinetsWithCabinetGroupName = Cabinets.Join(CabinetGroups, c => c.CabinetGroupId, cg => cg.Id, (c, cg) => new CabinetDto { Id = c.Id, Name = $"{c.Name} ({cg.Name})" });
     }
 
@@ -231,7 +233,7 @@ else
     {
         var device = (DeviceDto)args.Item;
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-        HttpResponseMessage respMsg = await httpClient.PutAsJsonAsync("api/Device/device", device);
+        HttpResponseMessage respMsg = await httpClient.PutAsJsonAsync("api/Config/device", device);
         await LoadData();
         StateHasChanged();
     }
@@ -240,7 +242,7 @@ else
     {
         var device = (DeviceDto)args.Item;
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-        HttpResponseMessage respMsg = await httpClient.DeleteAsync($"api/Device/device/{device.Id}");
+        HttpResponseMessage respMsg = await httpClient.DeleteAsync($"api/Config/device/{device.Id}");
         await LoadData();
         StateHasChanged();
     }
@@ -249,7 +251,7 @@ else
     {
         var device = (DeviceDto)args.Item;
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-        HttpResponseMessage respMsg = await httpClient.PostAsJsonAsync("api/Device/device", device);
+        HttpResponseMessage respMsg = await httpClient.PostAsJsonAsync("api/Config/device", device);
         await LoadData();
         StateHasChanged();
     }

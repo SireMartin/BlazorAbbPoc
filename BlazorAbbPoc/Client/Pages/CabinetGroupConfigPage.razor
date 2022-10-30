@@ -1,0 +1,113 @@
+﻿@page "/Configuration/CabinetGroup"
+
+@using Telerik.DataSource;
+@using BlazorAbbPoc.Shared.Messages
+
+@inject IHttpClientFactory ClientFactory
+
+<TelerikBreadcrumb Data="@(new Shared.BreadCrumbItem[] {new BreadCrumbItem {Text = "Configuration", Url= "Configuration"}, new BreadCrumbItem {Text = "CabinetGroup", Url= "Configuration/CabinetGroup"}})" />
+
+@if (CabinetGroups is not null)
+{
+
+    <TelerikGrid Data=@CabinetGroups
+             OnUpdate="@UpdateHandler"
+             OnDelete="@DeleteHandler"
+             OnCreate="@CreateHandler"
+             ConfirmDelete="true"
+             Pageable="true"
+             Sortable="true"
+             FilterMode="GridFilterMode.FilterMenu"
+             Resizable="true"
+             Reorderable="true"
+             EditMode="GridEditMode.Popup"
+             SelectionMode="GridSelectionMode.Multiple"
+             PageSize="10"
+             Navigable="true">
+        <GridColumns>
+            <GridCheckboxColumn></GridCheckboxColumn>
+            <GridColumn Field="@nameof(CabinetGroupDto.Name)" Title="Name" Width="195px" />
+
+            <GridCommandColumn Width="190px">
+                <GridCommandButton Command="Edit" Icon="edit" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+                <GridCommandButton Command="Delete" Icon="delete">Delete</GridCommandButton>
+            </GridCommandColumn>
+        </GridColumns>
+        <GridToolBar>
+            <GridCommandButton Command="Add" Icon="add">Add Device</GridCommandButton>
+        </GridToolBar>
+    </TelerikGrid>
+}
+else
+{
+    <text>Data is loading ...</text>
+}
+
+@code {
+    private IEnumerable<CabinetGroupDto>? CabinetGroups { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        CabinetGroups = await httpClient.GetFromJsonAsync<IEnumerable<CabinetGroupDto>>("api/Config/cabinetgroups");
+    }
+
+    public async Task UpdateHandler(GridCommandEventArgs args)
+    {
+        var cabinetGroup = (CabinetGroupDto)args.Item;
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        HttpResponseMessage respMsg = await httpClient.PutAsJsonAsync("api/Config/cabinetgroup", cabinetGroup);
+        await LoadData();
+        StateHasChanged();
+    }
+
+    public async Task DeleteHandler(GridCommandEventArgs args)
+    {
+        var cabinetGroup = (CabinetGroupDto)args.Item;
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        HttpResponseMessage respMsg = await httpClient.DeleteAsync($"api/Config/cabinetgroup/{cabinetGroup.Id}");
+        await LoadData();
+        StateHasChanged();
+    }
+
+    public async Task CreateHandler(GridCommandEventArgs args)
+    {
+        var cabinetGroup = (CabinetGroupDto)args.Item;
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        HttpResponseMessage respMsg = await httpClient.PostAsJsonAsync("api/Config/cabinetgroup", cabinetGroup);
+        await LoadData();
+        StateHasChanged();
+    }
+
+    public List<int?> GetFilterValues(CompositeFilterDescriptor filterDescriptor)
+    {
+        return filterDescriptor.FilterDescriptors.Select(f => (int?)(f as FilterDescriptor).Value).ToList();
+    }
+
+    public void ColumnValueChanged(bool value, int deviceTypeId, CompositeFilterDescriptor filterDescriptor)
+    {
+        var filter = filterDescriptor.FilterDescriptors.FirstOrDefault(f => deviceTypeId.Equals((f as FilterDescriptor).Value));
+
+        filterDescriptor.LogicalOperator = FilterCompositionLogicalOperator.Or;
+
+        if (value && filter == null)
+        {
+            filterDescriptor.FilterDescriptors.Add(new FilterDescriptor(nameof(DeviceDto.DeviceTypeId), FilterOperator.IsEqualTo, deviceTypeId));
+        }
+        else if (!value && filter != null)
+        {
+            filterDescriptor.FilterDescriptors.Remove(filter);
+        }
+    }
+}
+
+<style>
+    .width-100 {
+        width: 100%;
+    }
+</style>

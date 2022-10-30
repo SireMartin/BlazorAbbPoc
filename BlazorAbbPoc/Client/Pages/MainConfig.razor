@@ -1,0 +1,24 @@
+﻿@page "/Configuration"
+
+@inject NavigationManager NavMan
+
+<TelerikBreadcrumb Data="@(new Shared.BreadCrumbItem[] {new BreadCrumbItem {Text = "Configuration", Url= "Configuration"}})" />
+
+<div class="container">
+
+    <div class="row my-4">
+        <TelerikButton OnClick="@(() => NavMan.NavigateTo("/Configuration/Device"))">DeviceConfig</TelerikButton>
+    </div>
+    <div class="row my-4">
+        <TelerikButton OnClick="@(() => NavMan.NavigateTo("/Configuration/Cabinet"))">CabinetConfig</TelerikButton>
+    </div>
+    <div class="row my-4">
+        <TelerikButton OnClick="@(() => NavMan.NavigateTo("/Configuration/CabinetGroup"))">CabinetGroupConfig</TelerikButton>
+    </div>
+
+</div>
+
+@code {
+ 
+
+}

@@ -7,11 +7,11 @@ namespace BlazorAbbPoc.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DeviceController : ControllerBase
+    public class ConfigController : ControllerBase
     {
         private readonly ApiDbContext _dbContext;
 
-        public DeviceController(ApiDbContext dbContext)
+        public ConfigController(ApiDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -91,9 +91,7 @@ namespace BlazorAbbPoc.Server.Controllers
                 Name = device.Name,
                 PlcDeviceId = device.DeviceId,
                 DeviceTypeId = device.DeviceTypeId,
-                //todo: implement
-                //CabinetId = device.CabinetId,
-                CabinetId = 1,
+                CabinetId = device.CabinetId,
                 CabinetPosition = device.CabinetPosition
             };
             _dbContext.Devices.Add(dbDevice);
@@ -111,6 +109,7 @@ namespace BlazorAbbPoc.Server.Controllers
         [HttpGet("navigation")]
         public NavItemDto GetNavigationInfo()
         {
+            //explicitly add the mother of all LV01 (so no need to change frontend code)
             NavItemDto rootNavItem = new NavItemDto { itemId = "LV01" };
             rootNavItem.items = _dbContext.CabinetGroups.Include(cg => cg.Cabinets).ThenInclude(c => c.Devices).ThenInclude(d => d.DeviceType).Select(cg => new NavItemDto
             {
@@ -149,6 +148,112 @@ namespace BlazorAbbPoc.Server.Controllers
                 Id = x.Id,
                 Name = x.Name
             });
+        }
+
+        [HttpPut("cabinet")]
+        public async Task<IActionResult> UpdateCabinet([FromBody] CabinetDto cabinet)
+        {
+            Cabinet? dbCabinet = await _dbContext.Cabinets.FirstOrDefaultAsync(x => x.Id == cabinet.Id);
+            if (dbCabinet is null)
+            {
+                return NotFound();
+            }
+            dbCabinet.Name = cabinet.Name;
+            dbCabinet.CabinetGroupId = cabinet.CabinetGroupId;
+            await _dbContext.SaveChangesAsync();
+            return Ok(cabinet);
+        }
+
+        [HttpDelete("cabinet/{id:int}")]
+        public async Task<IActionResult> DeleteCabinet([FromRoute] int id)
+        {
+            Cabinet? dbCabinet = await _dbContext.Cabinets.FirstOrDefaultAsync(x => x.Id == id);
+            if (dbCabinet is null)
+            {
+                return NotFound();
+            }
+            _dbContext.Cabinets.Remove(dbCabinet);
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Ok();
+        }
+
+        [HttpPost("cabinet")]
+        public async Task<IActionResult> AddCabinet([FromBody] CabinetDto cabinet)
+        {
+            Cabinet dbCabinet = new Cabinet
+            {
+                Name = cabinet.Name,
+                CabinetGroupId = cabinet.CabinetGroupId
+            };
+            _dbContext.Cabinets.Add(dbCabinet);
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Ok(dbCabinet.Id);
+        }
+
+        [HttpPut("cabinetgroup")]
+        public async Task<IActionResult> UpdateCabinetGroup([FromBody] CabinetGroupDto cabinetGroup)
+        {
+            CabinetGroup? dbCabinetGroup = await _dbContext.CabinetGroups.FirstOrDefaultAsync(x => x.Id == cabinetGroup.Id);
+            if (dbCabinetGroup is null)
+            {
+                return NotFound();
+            }
+            dbCabinetGroup.Name = cabinetGroup.Name;
+            await _dbContext.SaveChangesAsync();
+            return Ok(cabinetGroup);
+        }
+
+        [HttpDelete("cabinetgroup/{id:int}")]
+        public async Task<IActionResult> DeleteCabinetGroup([FromRoute] int id)
+        {
+            CabinetGroup? dbCabinetGroup = await _dbContext.CabinetGroups.FirstOrDefaultAsync(x => x.Id == id);
+            if (dbCabinetGroup is null)
+            {
+                return NotFound();
+            }
+            _dbContext.CabinetGroups.Remove(dbCabinetGroup);
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Ok();
+        }
+
+        [HttpPost("cabinetgroup")]
+        public async Task<IActionResult> AddCabinetGroup([FromBody] CabinetGroupDto cabinetGroup)
+        {
+            CabinetGroup dbCabinetGroup = new CabinetGroup
+            {
+                Name = cabinetGroup.Name,
+            };
+            _dbContext.CabinetGroups.Add(dbCabinetGroup);
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Ok(dbCabinetGroup.Id);
         }
     }
 }

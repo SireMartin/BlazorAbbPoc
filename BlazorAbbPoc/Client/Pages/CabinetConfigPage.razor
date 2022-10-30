@@ -1,0 +1,182 @@
+﻿@page "/Configuration/Cabinet"
+
+@using Telerik.DataSource;
+@using BlazorAbbPoc.Shared.Messages
+
+@inject IHttpClientFactory ClientFactory
+
+<TelerikBreadcrumb Data="@(new Shared.BreadCrumbItem[] {new BreadCrumbItem {Text = "Configuration", Url= "Configuration"}, new BreadCrumbItem {Text = "Cabinet", Url= "Configuration/Cabinet"}})" />
+
+@if (Cabinets is not null && CabinetGroups is not null)
+{
+
+    <TelerikGrid Data=@Cabinets
+             OnUpdate="@UpdateHandler"
+             OnDelete="@DeleteHandler"
+             OnCreate="@CreateHandler"
+             ConfirmDelete="true"
+             Pageable="true"
+             Groupable="true"
+             Sortable="true"
+             FilterMode="GridFilterMode.FilterMenu"
+             Resizable="true"
+             Reorderable="true"
+             EditMode="GridEditMode.Popup"
+             SelectionMode="GridSelectionMode.Multiple"
+             OnStateInit="@((GridStateEventArgs<CabinetDto> args) => OnStateInit(args))"
+             PageSize="10"
+             Navigable="true">
+        <GridColumns>
+            <GridCheckboxColumn></GridCheckboxColumn>
+            <GridColumn Field="@nameof(CabinetDto.Name)" Title="Name" Width="195px" />
+
+            <GridColumn Field="@nameof(CabinetDto.CabinetGroupId)" Title="CabinetGroup" Width="140px">
+                <Template>
+                    @{
+                        var cabinet = context as CabinetDto;
+                        var categoryName = CabinetGroups.FirstOrDefault(c => c.Id == cabinet.CabinetGroupId)?.Name;
+                        @categoryName
+                        ;
+                    }
+                </Template>
+                <EditorTemplate>
+                    @{
+                        var cabinet = context as CabinetDto;
+                        <TelerikDropDownList Data="@CabinetGroups"
+                                         @bind-Value="@cabinet.CabinetGroupId"
+                                     DefaultText="Choose CabinetGroup"
+                                     TextField="Name"
+                                     ValueField="Id">
+                        </TelerikDropDownList>
+                    }
+                </EditorTemplate>
+                <FilterMenuTemplate>
+                    @{
+                        <div class="filter-values-container">
+                            @foreach (var cabinetGroup in CabinetGroups)
+                            {
+                                <div>
+                                    <TelerikCheckBox Value="@(GetFilterValues(context.FilterDescriptor).Contains(cabinetGroup.Id))"
+                                         ValueChanged="@((bool value) => ColumnValueChanged(value, cabinetGroup.Id, context.FilterDescriptor))"
+                                         Id="@($"name_{cabinetGroup.Id}")">
+                                    </TelerikCheckBox>
+                                    <label for="@($"name_{cabinetGroup.Id}")">
+                                        @cabinetGroup.Name
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    }
+                </FilterMenuTemplate>
+                <GroupHeaderTemplate>
+                    @{
+                        if (context.Value != null)
+                        {
+                            <span>CabinetGroup: @CabinetGroups.FirstOrDefault(c => c.Id == (int)context.Value).Name</span>
+                        }
+                        else
+                        {
+                            <span>No CabinetGroup</span>
+                        }
+                    }
+                </GroupHeaderTemplate>
+            </GridColumn>
+
+            <GridCommandColumn Width="190px">
+                <GridCommandButton Command="Edit" Icon="edit" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+                <GridCommandButton Command="Delete" Icon="delete">Delete</GridCommandButton>
+            </GridCommandColumn>
+        </GridColumns>
+        <GridToolBar>
+            <GridCommandButton Command="Add" Icon="add">Add Device</GridCommandButton>
+        </GridToolBar>
+    </TelerikGrid>
+}
+else
+{
+    <text>Data is loading ...</text>
+}
+
+@code {
+    private IEnumerable<CabinetDto>? Cabinets { get; set; }
+    private IEnumerable<CabinetGroupDto>? CabinetGroups { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        Cabinets = await httpClient.GetFromJsonAsync<IEnumerable<CabinetDto>>("api/Config/cabinets");
+        CabinetGroups = await httpClient.GetFromJsonAsync<IEnumerable<CabinetGroupDto>>("api/Config/cabinetgroups");
+    }
+
+    private void OnStateInit(GridStateEventArgs<CabinetDto> args)
+    {
+        args.GridState.GroupDescriptors = new List<GroupDescriptor>()
+        {
+            new GroupDescriptor()
+            {
+                Member = nameof(CabinetDto.CabinetGroupId),
+                MemberType = typeof(int)
+            }
+        };
+    }
+
+    public async Task UpdateHandler(GridCommandEventArgs args)
+    {
+        var cabinet = (CabinetDto)args.Item;
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        HttpResponseMessage respMsg = await httpClient.PutAsJsonAsync("api/Config/cabinet", cabinet);
+        await LoadData();
+        StateHasChanged();
+    }
+
+    public async Task DeleteHandler(GridCommandEventArgs args)
+    {
+        var cabinet = (CabinetDto)args.Item;
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        HttpResponseMessage respMsg = await httpClient.DeleteAsync($"api/Config/cabinet/{cabinet.Id}");
+        await LoadData();
+        StateHasChanged();
+    }
+
+    public async Task CreateHandler(GridCommandEventArgs args)
+    {
+        var cabinet = (CabinetDto)args.Item;
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        HttpResponseMessage respMsg = await httpClient.PostAsJsonAsync("api/Config/cabinet", cabinet);
+        await LoadData();
+        StateHasChanged();
+    }
+
+    public List<int?> GetFilterValues(CompositeFilterDescriptor filterDescriptor)
+    {
+        return filterDescriptor.FilterDescriptors.Select(f => (int?)(f as FilterDescriptor).Value).ToList();
+    }
+
+    public void ColumnValueChanged(bool value, int deviceTypeId, CompositeFilterDescriptor filterDescriptor)
+    {
+        var filter = filterDescriptor.FilterDescriptors.FirstOrDefault(f => deviceTypeId.Equals((f as FilterDescriptor).Value));
+
+        filterDescriptor.LogicalOperator = FilterCompositionLogicalOperator.Or;
+
+        if (value && filter == null)
+        {
+            filterDescriptor.FilterDescriptors.Add(new FilterDescriptor(nameof(DeviceDto.DeviceTypeId), FilterOperator.IsEqualTo, deviceTypeId));
+        }
+        else if (!value && filter != null)
+        {
+            filterDescriptor.FilterDescriptors.Remove(filter);
+        }
+    }
+}
+
+<style>
+    .width-100 {
+        width: 100%;
+    }
+</style>
