@@ -14,10 +14,18 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddSingleton<DataService>();
+builder.Services.AddSingleton<IActualValueService, ActualValueService>();
+builder.Services.AddSingleton<IHierarchicalNameService, HierarchicalNameService>();
+builder.Services.AddSingleton<IPlcMsgDispatcher, PlcMsgDispatcher>();
 
 builder.Services.AddDbContext<ApiDbContext>(options => options.UseNpgsql("host=localhost;port=5432;database=blogdb;username=bloguser;password=bloguser"));
 
 var app = builder.Build();
+
+IHierarchicalNameService hierarchicalNameService = app.Services.GetRequiredService<IHierarchicalNameService>();
+await hierarchicalNameService.Initialize();
+IPlcMsgDispatcher plcMsgDispatcher = app.Services.GetRequiredService<IPlcMsgDispatcher>();
+await plcMsgDispatcher.Initialize();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

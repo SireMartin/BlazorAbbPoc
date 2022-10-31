@@ -60,7 +60,7 @@
     {
         await base.OnInitializedAsync();
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-        NavItem? navConfig = await httpClient.GetFromJsonAsync<NavItem>("api/Device/navigation");
+        NavItem? navConfig = await httpClient.GetFromJsonAsync<NavItem>("api/Config/navigation");
         Dispatcher.Dispatch(new NavigationConfigurationChangedAction(navConfig));
     }
 

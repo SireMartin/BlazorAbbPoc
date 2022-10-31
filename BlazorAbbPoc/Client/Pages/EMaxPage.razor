@@ -1,9 +1,11 @@
 ﻿@page "/EMax/{*ItemId}"
 
 @using System.Timers;
-@using BlazorAbbPoc.Shared.Plc;
+@using BlazorAbbPoc.Shared.Messages
 
 @inject IHttpClientFactory ClientFactory
+
+@implements IDisposable
 
 <div class="container">
     <div class="row">
@@ -77,6 +79,22 @@
                             @currentPlcData.frq
                         </div>
                     </div>
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <strong>MaxValue</strong>
+                        </div>
+                        <div>
+                            @currentPlcData.protA_L_I1
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <strong>Load</strong>
+                        </div>
+                        <div>
+                            @((currentPlcData.l1A + currentPlcData.l2A + currentPlcData.l3A) / currentPlcData.protA_L_I1)
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,14 +128,19 @@
     public string? ItemId { get; set; }
 
     private Timer timer = new Timer();
-    public AbbPlcMsg currentPlcData;
+    public ActualValuesDto currentPlcData;
 
     protected override void OnInitialized()
     {
-        timer.Interval = 500;
+        timer.Interval = 1000;
         timer.Elapsed += HandleTimer;
         timer.AutoReset = true;
         timer.Enabled = true;
+    }
+
+    public void Dispose()
+    {
+        timer.Dispose();
     }
 
     private async void HandleTimer(object sender, ElapsedEventArgs e)
@@ -136,7 +159,7 @@
         try
         {
             HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-            currentPlcData = await httpClient.GetFromJsonAsync<AbbPlcMsg>("api/plcdata");
+            currentPlcData = await httpClient.GetFromJsonAsync<ActualValuesDto>($"api/plcdata/{ItemId}");
         }
         catch (Exception ex)
         {

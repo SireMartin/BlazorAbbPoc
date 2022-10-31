@@ -1,4 +1,5 @@
 ﻿using BlazorAbbPoc.Server.Models;
+using BlazorAbbPoc.Server.Services;
 using BlazorAbbPoc.Shared;
 using BlazorAbbPoc.Shared.Plc;
 using Microsoft.AspNetCore.Mvc;
@@ -9,29 +10,22 @@ namespace BlazorAbbPoc.Server.Controllers
     [ApiController]
     public class PlcDataController : ControllerBase
     {
-        private readonly Services.DataService _dataService;
+        private readonly DataService _dataService;
+        private readonly IActualValueService _actualValueService;
+        private readonly IPlcMsgDispatcher _plcMsgDispatcher;
 
-        public PlcDataController(Services.DataService dataService)
+        public PlcDataController(DataService dataService, IActualValueService actualValueService, IPlcMsgDispatcher plcMsgDispatcher)
         {
             _dataService = dataService;
+            _actualValueService = actualValueService;
+            _plcMsgDispatcher = plcMsgDispatcher;
         }
 
-        [HttpPost("{id}")]
-        public IActionResult Index([FromRoute] string id, [FromBody] AbbPlcMsg msg)
+        [HttpPost]
+        public IActionResult Index([FromBody] AbbPlcMsg msg)
         {
-            _dataService.PlcData[id] = msg;
-            if (!_dataService.PlcTimedData.ContainsKey(id))
-            {
-                _dataService.PlcTimedData[id] = new List<(DateTime, AbbPlcMsg)>();
-            }
-            _dataService.PlcTimedData[id].Add((DateTime.Now, msg));
+            _plcMsgDispatcher.DispatchPlcMsg(msg);
             return Ok();
-        }
-
-        [HttpGet]
-        public AbbPlcMsg Get()
-        {
-            return _dataService.PlcData.LastOrDefault().Value;
         }
 
         [HttpGet("chartdata")]
@@ -44,10 +38,10 @@ namespace BlazorAbbPoc.Server.Controllers
             return _dataService.PlcTimedData.LastOrDefault().Value.Select(x => new ChartData { timestamp = x.Item1, plcMsg = x.Item2 });
         }
 
-        [HttpGet("blog")]
-        public IEnumerable<Device> GetAllBlogs([FromServices] ApiDbContext apiDbContext)
+        [HttpGet("{lv}/{cg}/{c}/{d}")]
+        public Shared.Messages.ActualValuesDto GetActualPlcDataForHierarchicalName(string lv, string cg, string c, string d)
         {
-            return apiDbContext.Devices.Select(x => x);
+            return _actualValueService.GetActualValuesForHierarchicalName($"{lv}/{cg}/{c}/{d}");
         }
     }
 }

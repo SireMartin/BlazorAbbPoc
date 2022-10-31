@@ -112,7 +112,7 @@ public class AbbPlcMsg
     public int _49Harm { get; set; }
     public int _50Harm { get; set; }
     public int protA_L_Config { get; set; }
-    public int ProtA_L_I1 { get; set; }
+    public int? ProtA_L_I1 { get; set; }
     public int ProtA_L_t1 { get; set; }
     public int ProtA_L_Curve { get; set; }
     public int ProtA_L_PrealarmI1 { get; set; }
