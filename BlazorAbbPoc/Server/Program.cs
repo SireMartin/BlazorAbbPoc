@@ -1,4 +1,3 @@
-using BlazorAbbPoc.Server.Workers;
 using BlazorAbbPoc.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using BlazorAbbPoc.Server.Models;
@@ -12,8 +11,6 @@ builder.Services.AddControllers().AddJsonOptions(configure =>
 });
 builder.Services.AddRazorPages();
 
-builder.Services.AddHostedService<Worker>();
-builder.Services.AddSingleton<DataService>();
 builder.Services.AddSingleton<IActualValueService, ActualValueService>();
 builder.Services.AddSingleton<IHierarchicalNameService, HierarchicalNameService>();
 builder.Services.AddSingleton<IPlcMsgDispatcher, PlcMsgDispatcher>();

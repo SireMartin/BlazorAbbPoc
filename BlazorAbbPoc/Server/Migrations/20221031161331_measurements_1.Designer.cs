@@ -3,6 +3,7 @@ using System;
 using BlazorAbbPoc.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorAbbPoc.Server.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221031161331_measurements_1")]
+    partial class measurements_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -151,74 +153,65 @@ namespace BlazorAbbPoc.Server.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreTimestamp")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("cre_timestamp")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("cre_timestamp");
 
                     b.Property<int>("DeviceId")
                         .HasColumnType("integer")
                         .HasColumnName("device_id");
 
-                    b.Property<int?>("Frq")
-                        .HasColumnType("integer")
-                        .HasColumnName("frq");
+                    b.Property<int>("Frq")
+                        .HasColumnType("integer");
 
-                    b.Property<int?>("L1A")
+                    b.Property<int>("L1A")
                         .HasColumnType("integer")
-                        .HasColumnName("l1_a");
+                        .HasColumnName("l1a");
 
-                    b.Property<int?>("L1l2V")
+                    b.Property<int>("L1l2V")
                         .HasColumnType("integer")
-                        .HasColumnName("l1_l2_v");
+                        .HasColumnName("l1l2v");
 
-                    b.Property<int?>("L1nV")
+                    b.Property<int>("L1nV")
                         .HasColumnType("integer")
-                        .HasColumnName("l1_n_v");
+                        .HasColumnName("l1nv");
 
-                    b.Property<int?>("L2A")
+                    b.Property<int>("L2A")
                         .HasColumnType("integer")
-                        .HasColumnName("l2_a");
+                        .HasColumnName("l2a");
 
-                    b.Property<int?>("L2l3V")
+                    b.Property<int>("L2l3V")
                         .HasColumnType("integer")
-                        .HasColumnName("l2_l3_v");
+                        .HasColumnName("l2l3v");
 
-                    b.Property<int?>("L2nV")
+                    b.Property<int>("L2nV")
                         .HasColumnType("integer")
-                        .HasColumnName("l2_n_v");
+                        .HasColumnName("l2nv");
 
-                    b.Property<int?>("L3A")
+                    b.Property<int>("L3A")
                         .HasColumnType("integer")
-                        .HasColumnName("l3_a");
+                        .HasColumnName("l3a");
 
-                    b.Property<int?>("L3l1V")
+                    b.Property<int>("L3l1V")
                         .HasColumnType("integer")
-                        .HasColumnName("l3_l1_v");
+                        .HasColumnName("l3l1v");
 
-                    b.Property<int?>("L3nV")
+                    b.Property<int>("L3nV")
                         .HasColumnType("integer")
-                        .HasColumnName("l3_n_v");
+                        .HasColumnName("l3nv");
 
-                    b.Property<int?>("PActTotal")
-                        .HasColumnType("integer")
-                        .HasColumnName("p_act_totoal");
+                    b.Property<int>("PActTotal")
+                        .HasColumnType("integer");
 
-                    b.Property<int?>("PAppTotal")
-                        .HasColumnType("integer")
-                        .HasColumnName("p_app_totoal");
+                    b.Property<int>("PAppTotal")
+                        .HasColumnType("integer");
 
-                    b.Property<int?>("PReactTotal")
-                        .HasColumnType("integer")
-                        .HasColumnName("p_react_totoal");
+                    b.Property<int>("PReactTotal")
+                        .HasColumnType("integer");
 
-                    b.Property<int?>("ProtA_L_I1")
-                        .HasColumnType("integer")
-                        .HasColumnName("prot_a_l_i1");
+                    b.Property<int>("ProtA_L_I1")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreTimestamp");
 
                     b.HasIndex("DeviceId");
 

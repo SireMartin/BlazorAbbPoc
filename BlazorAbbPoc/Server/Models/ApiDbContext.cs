@@ -14,6 +14,7 @@ public class ApiDbContext : DbContext
     public DbSet<DeviceType>? DeviceTypes { get; set; }
     public DbSet<Cabinet>? Cabinets { get; set; }
     public DbSet<CabinetGroup>? CabinetGroups { get; set; }
+    public DbSet<Measurement> Measurements { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -63,6 +64,31 @@ public class ApiDbContext : DbContext
 
             entityBuilder.Property(e => e.Id).HasColumnName("id");
             entityBuilder.Property(e => e.Name).HasColumnName("name");
+        });
+
+        builder.Entity<Measurement>(entityBuilder =>
+        {
+            entityBuilder.HasKey(e => e.Id);
+            entityBuilder.ToTable("measurements");
+            entityBuilder.HasIndex(e => e.CreTimestamp);
+
+            entityBuilder.Property(e => e.Id).HasColumnName("id");
+            entityBuilder.Property(e => e.DeviceId).HasColumnName("device_id");
+            entityBuilder.Property(e => e.CreTimestamp).HasColumnName("cre_timestamp").HasDefaultValueSql("now()");
+            entityBuilder.Property(e => e.L1A).HasColumnName("l1_a");
+            entityBuilder.Property(e => e.L2A).HasColumnName("l2_a");
+            entityBuilder.Property(e => e.L3A).HasColumnName("l3_a");
+            entityBuilder.Property(e => e.L1nV).HasColumnName("l1_n_v");
+            entityBuilder.Property(e => e.L2nV).HasColumnName("l2_n_v");
+            entityBuilder.Property(e => e.L3nV).HasColumnName("l3_n_v");
+            entityBuilder.Property(e => e.L1l2V).HasColumnName("l1_l2_v");
+            entityBuilder.Property(e => e.L2l3V).HasColumnName("l2_l3_v");
+            entityBuilder.Property(e => e.L3l1V).HasColumnName("l3_l1_v");
+            entityBuilder.Property(e => e.PActTotal).HasColumnName("p_act_totoal");
+            entityBuilder.Property(e => e.PReactTotal).HasColumnName("p_react_totoal");
+            entityBuilder.Property(e => e.PAppTotal).HasColumnName("p_app_totoal");
+            entityBuilder.Property(e => e.Frq).HasColumnName("frq");
+            entityBuilder.Property(e => e.ProtA_L_I1).HasColumnName("prot_a_l_i1");
         });
     }
 }

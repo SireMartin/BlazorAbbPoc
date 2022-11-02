@@ -41,9 +41,9 @@ else
     public class MyDataModel
     {
         public DateTime TimeCategory { get; set; }
-        public int L1Voltage { get; set; }
-        public int L2Voltage { get; set; }
-        public int L3Voltage { get; set; }
+        public int? L1Voltage { get; set; }
+        public int? L2Voltage { get; set; }
+        public int? L3Voltage { get; set; }
     }
 
     private IEnumerable<BlazorAbbPoc.Shared.ChartData>? coll = null;
@@ -55,8 +55,8 @@ else
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
         try
         {
-            coll = await httpClient.GetFromJsonAsync<IEnumerable<BlazorAbbPoc.Shared.ChartData>>("api/plcdata/chartdata");
-            dataColl = coll.Select(x => new MyDataModel { TimeCategory = x.timestamp, L1Voltage = x.plcMsg.l1nV, L2Voltage = x.plcMsg.l2nV, L3Voltage = x.plcMsg.l3nV });
+            coll = await httpClient.GetFromJsonAsync<IEnumerable<BlazorAbbPoc.Shared.ChartData>>("api/plcdata/chartdata/0.3.2");
+            dataColl = coll.Select(x => new MyDataModel { TimeCategory = x.timestamp, L1Voltage = x.l1Voltage, L2Voltage = x.l2Voltage, L3Voltage = x.l3Voltage });
         }
         catch(Exception e)
         {

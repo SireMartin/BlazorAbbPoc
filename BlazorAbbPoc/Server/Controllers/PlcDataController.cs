@@ -3,6 +3,7 @@ using BlazorAbbPoc.Server.Services;
 using BlazorAbbPoc.Shared;
 using BlazorAbbPoc.Shared.Plc;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorAbbPoc.Server.Controllers
 {
@@ -10,15 +11,15 @@ namespace BlazorAbbPoc.Server.Controllers
     [ApiController]
     public class PlcDataController : ControllerBase
     {
-        private readonly DataService _dataService;
+        private readonly ApiDbContext _apiDbContext;
         private readonly IActualValueService _actualValueService;
         private readonly IPlcMsgDispatcher _plcMsgDispatcher;
 
-        public PlcDataController(DataService dataService, IActualValueService actualValueService, IPlcMsgDispatcher plcMsgDispatcher)
+        public PlcDataController(IActualValueService actualValueService, IPlcMsgDispatcher plcMsgDispatcher, ApiDbContext apiDbContext)
         {
-            _dataService = dataService;
             _actualValueService = actualValueService;
             _plcMsgDispatcher = plcMsgDispatcher;
+            _apiDbContext = apiDbContext;
         }
 
         [HttpPost]
@@ -28,14 +29,16 @@ namespace BlazorAbbPoc.Server.Controllers
             return Ok();
         }
 
-        [HttpGet("chartdata")]
-        public IEnumerable<ChartData> GetChartData()
+        [HttpGet("chartdata/{plcId}")]
+        public IEnumerable<ChartData> GetChartData(string plcId)
         {
-            if (_dataService.PlcTimedData.Count == 0)
+            return _apiDbContext.Measurements.Include(x => x.Device).Where(x => x.Device.PlcDeviceId == plcId).Select(x => new ChartData
             {
-                return Array.Empty<ChartData>();
-            }
-            return _dataService.PlcTimedData.LastOrDefault().Value.Select(x => new ChartData { timestamp = x.Item1, plcMsg = x.Item2 });
+                timestamp = x.CreTimestamp,
+                l1Voltage = x.L1nV,
+                l2Voltage = x.L2nV,
+                l3Voltage = x.L3nV
+            });
         }
 
         [HttpGet("{lv}/{cg}/{c}/{d}")]
