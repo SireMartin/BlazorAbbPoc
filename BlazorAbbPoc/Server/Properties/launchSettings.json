@@ -3,7 +3,7 @@
     "BlazorAbbPoc.Server": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "DeviceConfig",
+      "launchUrl": "EMax/LV01/AutoBoxes/K0-3/Sub1",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

@@ -19,6 +19,22 @@
     @if(currentPlcData is not null)
     {
         <div class="row my-4">
+            <div>
+                @{
+                    double ProgressBarValue = ((double)(currentPlcData.l1A.Value + currentPlcData.l2A.Value + currentPlcData.l3A.Value)) / 3d;
+                }
+                <TelerikProgressBar Max="@currentPlcData.protA_L_I1.Value" Value="@ProgressBarValue">
+                    <ProgressBarLabel Visible="true" Position="@ProgressBarLabelPosition.Center">
+                        <Template>
+                            <div>
+                                @($"{(context.Value / currentPlcData.protA_L_I1.Value * 100):F2} %")
+                            </div>
+                        </Template>
+                    </ProgressBarLabel>
+                </TelerikProgressBar>
+            </div>
+        </div>
+        <div class="row my-4">
             @*phase voltage*@
             <div class="col col-3-lg">
                 <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@currentPlcData.l1nV.Value" PointerColor="Red" Unit="V" />
@@ -91,8 +107,16 @@
                         <div>
                             <strong>Load</strong>
                         </div>
-                        <div>
-                            @((currentPlcData.l1A + currentPlcData.l2A + currentPlcData.l3A) / currentPlcData.protA_L_I1)
+                        <div class="col-2">
+                            <TelerikProgressBar Max="@currentPlcData.protA_L_I1.Value" Value="@ProgressBarValue">
+                                <ProgressBarLabel Visible="true" Position="@ProgressBarLabelPosition.Center">
+                                    <Template>
+                                        <div>
+                                            @($"{(context.Value / currentPlcData.protA_L_I1.Value * 100):F2} %")
+                                        </div>
+                                    </Template>
+                                </ProgressBarLabel>
+                            </TelerikProgressBar>
                         </div>
                     </div>
                 </div>
