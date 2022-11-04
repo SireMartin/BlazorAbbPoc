@@ -16,10 +16,13 @@
             <h3>@ItemId.Split('/').Last()</h3>
         </div>
     </div>
-    @if(currentPlcData is not null)
+    @if(currentPlcData is not null && currentPlcData.l1nV is not null)
     {
-        <div class="row my-4">
-            <div>
+        <div class="row my-4 justify-content-center">
+            <div class="col-1">
+                <strong>Load</strong>
+            </div>
+            <div class="col-4">
                 @{
                     double ProgressBarValue = ((double)(currentPlcData.l1A.Value + currentPlcData.l2A.Value + currentPlcData.l3A.Value)) / 3d;
                 }

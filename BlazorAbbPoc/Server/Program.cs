@@ -1,6 +1,8 @@
 using BlazorAbbPoc.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using BlazorAbbPoc.Server.Models;
+using Microsoft.Extensions.DependencyInjection;
+using BlazorAbbPoc.Server.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,17 +16,23 @@ builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IActualValueService, ActualValueService>();
 builder.Services.AddSingleton<IHierarchicalNameService, HierarchicalNameService>();
 builder.Services.AddSingleton<IPlcMsgDispatcher, PlcMsgDispatcher>();
+//builder.Services.AddHostedService<RabbitMqWorker>();
 
-builder.Services.AddDbContext<ApiDbContext>(options => options.UseNpgsql("host=localhost;port=5432;database=blogdb;username=bloguser;password=bloguser"));
+builder.Services.AddDbContext<ApiDbContext>(options => options.UseNpgsql("host=postgres;port=5432;database=blogdb;username=bloguser;password=bloguser"));
 
 var app = builder.Build();
+
+var ssf = app.Services.GetRequiredService<IServiceScopeFactory>();
+using (var scope = ssf.CreateScope())
+{
+    ApiDbContext dbContext = scope.ServiceProvider.GetService<ApiDbContext>();
+    dbContext.Database.Migrate();
+}
 
 IHierarchicalNameService hierarchicalNameService = app.Services.GetRequiredService<IHierarchicalNameService>();
 await hierarchicalNameService.Initialize();
 IPlcMsgDispatcher plcMsgDispatcher = app.Services.GetRequiredService<IPlcMsgDispatcher>();
 await plcMsgDispatcher.Initialize();
-ApiDbContext dbContext = app.Services.GetRequiredService<ApiDbContext>();
-dbContext.Database.Migrate();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -108,6 +108,7 @@ namespace BlazorAbbPoc.Server.Controllers
                 await _dbContext.SaveChangesAsync();
                 //the hierarchicalnames could have been changed so reinitialize the hierarchicalname service
                 await _hierarchicalNameService.Initialize();
+                _actualValueService.UpdateSettings(_hierarchicalNameService.GetHierarchicalNameForPlcDeviceId(dbDevice.PlcDeviceId), device.MaxValue);
             }
             catch (Exception ex)
             {

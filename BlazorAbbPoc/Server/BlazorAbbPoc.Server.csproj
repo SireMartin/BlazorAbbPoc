@@ -21,9 +21,5 @@
     <ProjectReference Include="..\Shared\BlazorAbbPoc.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Workers\" />
-  </ItemGroup>
-
 
 </Project>
