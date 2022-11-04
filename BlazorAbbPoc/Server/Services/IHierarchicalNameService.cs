@@ -3,6 +3,6 @@
     public interface IHierarchicalNameService
     {
         string GetHierarchicalNameForPlcDeviceId(string plcDeviceId);
-        Task Initialize();
+        void Initialize();
     }
 }

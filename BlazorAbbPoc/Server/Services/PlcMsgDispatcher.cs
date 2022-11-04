@@ -19,7 +19,7 @@ public class PlcMsgDispatcher : IPlcMsgDispatcher
         _logger = logger;
     }
 
-    public async Task Initialize()
+    public void Initialize()
     {
         using (var scope = _serviceScopeFactory.CreateScope())
         {

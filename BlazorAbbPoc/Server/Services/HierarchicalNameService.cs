@@ -18,7 +18,7 @@ public class HierarchicalNameService : IHierarchicalNameService
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task Initialize()
+    public void Initialize()
     {
         container.Clear();
         using (var scope = _serviceScopeFactory.CreateScope())

@@ -6,7 +6,7 @@ filebeat.config:
 filebeat.inputs:
 - type: mqtt
   hosts: 
-    - tcp://rabbitmq:1883
+    - tcp://192.168.100.5:1883
   topics: 
     - amq/topic
 

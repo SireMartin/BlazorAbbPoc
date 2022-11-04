@@ -65,7 +65,7 @@ namespace BlazorAbbPoc.Server.Controllers
             dbDevice.CabinetPosition = device.CabinetPosition;
             await _dbContext.SaveChangesAsync();
             //the hierarchicalnames could have been changed so reinitialize the hierarchicalname service
-            await _hierarchicalNameService.Initialize();
+            _hierarchicalNameService.Initialize();
             _actualValueService.UpdateSettings(_hierarchicalNameService.GetHierarchicalNameForPlcDeviceId(dbDevice.PlcDeviceId), device.MaxValue);
             return Ok(device);
         }
@@ -107,7 +107,7 @@ namespace BlazorAbbPoc.Server.Controllers
             {
                 await _dbContext.SaveChangesAsync();
                 //the hierarchicalnames could have been changed so reinitialize the hierarchicalname service
-                await _hierarchicalNameService.Initialize();
+                _hierarchicalNameService.Initialize();
                 _actualValueService.UpdateSettings(_hierarchicalNameService.GetHierarchicalNameForPlcDeviceId(dbDevice.PlcDeviceId), device.MaxValue);
             }
             catch (Exception ex)
@@ -173,7 +173,7 @@ namespace BlazorAbbPoc.Server.Controllers
             dbCabinet.CabinetGroupId = cabinet.CabinetGroupId;
             await _dbContext.SaveChangesAsync();
             //the hierarchicalnames could have been changed so reinitialize the hierarchicalname service
-            await _hierarchicalNameService.Initialize();
+            _hierarchicalNameService.Initialize();
             return Ok(cabinet);
         }
 
@@ -210,7 +210,7 @@ namespace BlazorAbbPoc.Server.Controllers
             {
                 await _dbContext.SaveChangesAsync();
                 //the hierarchicalnames could have been changed so reinitialize the hierarchicalname service
-                await _hierarchicalNameService.Initialize();
+                _hierarchicalNameService.Initialize();
             }
             catch (Exception ex)
             {
@@ -230,7 +230,7 @@ namespace BlazorAbbPoc.Server.Controllers
             dbCabinetGroup.Name = cabinetGroup.Name;
             await _dbContext.SaveChangesAsync();
             //the hierarchicalnames could have been changed so reinitialize the hierarchicalname service
-            await _hierarchicalNameService.Initialize();
+            _hierarchicalNameService.Initialize();
             return Ok(cabinetGroup);
         }
 
@@ -266,7 +266,7 @@ namespace BlazorAbbPoc.Server.Controllers
             {
                 await _dbContext.SaveChangesAsync();
                 //the hierarchicalnames could have been changed so reinitialize the hierarchicalname service
-                await _hierarchicalNameService.Initialize();
+                _hierarchicalNameService.Initialize();
             }
             catch (Exception ex)
             {

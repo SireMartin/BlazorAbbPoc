@@ -16,7 +16,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IActualValueService, ActualValueService>();
 builder.Services.AddSingleton<IHierarchicalNameService, HierarchicalNameService>();
 builder.Services.AddSingleton<IPlcMsgDispatcher, PlcMsgDispatcher>();
-//builder.Services.AddHostedService<RabbitMqWorker>();
+builder.Services.AddHostedService<RabbitMqWorker>();
 
 builder.Services.AddDbContext<ApiDbContext>(options => options.UseNpgsql("host=postgres;port=5432;database=blogdb;username=bloguser;password=bloguser"));
 
@@ -30,9 +30,9 @@ using (var scope = ssf.CreateScope())
 }
 
 IHierarchicalNameService hierarchicalNameService = app.Services.GetRequiredService<IHierarchicalNameService>();
-await hierarchicalNameService.Initialize();
+hierarchicalNameService.Initialize();
 IPlcMsgDispatcher plcMsgDispatcher = app.Services.GetRequiredService<IPlcMsgDispatcher>();
-await plcMsgDispatcher.Initialize();
+plcMsgDispatcher.Initialize();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
