@@ -1,0 +1,16 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+filebeat.inputs:
+- type: mqtt
+  hosts: 
+    - tcp://192.168.150.89:1883
+  topics: 
+    - amq/topic
+
+output.elasticsearch.ssl.verification_mode: none
+output.elasticsearch.hosts: ['http://elasticsearch:9200']
+output.elasticsearch.username: 'elastic'
+output.elasticsearch.password: 'elastic'

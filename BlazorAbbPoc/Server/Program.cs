@@ -23,6 +23,8 @@ IHierarchicalNameService hierarchicalNameService = app.Services.GetRequiredServi
 await hierarchicalNameService.Initialize();
 IPlcMsgDispatcher plcMsgDispatcher = app.Services.GetRequiredService<IPlcMsgDispatcher>();
 await plcMsgDispatcher.Initialize();
+ApiDbContext dbContext = app.Services.GetRequiredService<ApiDbContext>();
+dbContext.Database.Migrate();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

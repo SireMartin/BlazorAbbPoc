@@ -1,0 +1,86 @@
+version: "2.4"
+services:
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:7.16.2
+  #   container_name: kibana
+  #   restart: always
+  #   ports:
+  #     - 5601:5601
+  #   links: 
+  #     - elasticsearch
+  #   depends_on: 
+  #     - elasticsearch
+  #   networks:
+  #     - elastic
+
+  # filebeat:
+  #   image: docker.elastic.co/beats/filebeat:7.16.2
+  #   container_name: filebeat
+  #   restart: always
+  #   user: root:root
+  #   environment:
+  #     - strict.perms=false
+  #   links:
+  #     - elasticsearch
+  #   depends_on:
+  #     - elasticsearch
+  #   networks:
+  #     - elastic
+  #   volumes:
+  #     - ./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml
+  
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+  #   container_name: elasticsearch
+  #   restart: always
+  #   environment:
+  #     - node.name=es01
+  #     - cluster.name=es-docker-cluster
+  #     - discovery.type=single-node
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+  #   networks:
+  #     - elastic
+  #   volumes:
+  #     - data_elastic:/usr/share/elasticsearch/data
+
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   container_name: rabbitmq
+  #   hostname: abb-rabbit
+  #   restart: always
+  #   ports:
+  #     - 1883:1883
+  #     - 5672:5672
+  #     - 15672:15672
+  
+  webapp:
+    image: abb_evci_delft:1
+    build: BlazorAbbPoc
+    environment:
+      - TZ=Europe/Brussels
+    ports:
+      - 8080:80
+      - 443:443
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+#      - ./dbscripts/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    environment:
+      POSTGRES_USER: "bloguser"
+      POSTGRES_PASSWORD: "bloguser"
+      POSTGRES_DB: "blogdb"
+
+networks:
+  elastic:
+    driver: bridge
+
+volumes:
+  data_elastic:
+    driver: local
