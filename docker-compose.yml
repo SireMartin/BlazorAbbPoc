@@ -57,6 +57,7 @@ services:
   
   webapp:
     image: abb_evci_delft:1
+    restart: always
     build: 
       context: ./BlazorAbbPoc
       args:
