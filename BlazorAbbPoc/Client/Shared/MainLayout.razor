@@ -1,4 +1,7 @@
 ﻿@layout TelerikLayout
+
+@using BlazorAbbPoc.Client.Features.Auth
+
 @inherits LayoutComponentBase
 
 <div class="page">
@@ -9,6 +12,7 @@
     <main>
         <div class="top-row px-4">
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <LoginStatus/>
         </div>
 
         <article class="content px-4">

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using BlazorAbbPoc.Server.Models;
 using Microsoft.Extensions.DependencyInjection;
 using BlazorAbbPoc.Server.Workers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +17,19 @@ builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IActualValueService, ActualValueService>();
 builder.Services.AddSingleton<IHierarchicalNameService, HierarchicalNameService>();
 builder.Services.AddSingleton<IPlcMsgDispatcher, PlcMsgDispatcher>();
-builder.Services.AddHostedService<RabbitMqWorker>();
+//builder.Services.AddHostedService<RabbitMqWorker>();
 
 builder.Services.AddDbContext<ApiDbContext>(options => options.UseNpgsql("host=postgres;port=5432;database=blogdb;username=bloguser;password=bloguser"));
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.Authority = builder.Configuration["Auth0:Authority"];
+    options.Audience = builder.Configuration["Auth0:ApiIdentifier"];
+});
 
 var app = builder.Build();
 
@@ -53,7 +64,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
