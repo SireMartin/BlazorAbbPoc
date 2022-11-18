@@ -7,4 +7,6 @@ public class Cabinet
     public int CabinetGroupId { get; set; }
     public CabinetGroup CabinetGroup { get; set; }
     public virtual IList<Device> Devices { get; set; }
+    public int? ParentCabinetId { get; set; }
+    public Cabinet? ParentCabinet { get; set; }
 }

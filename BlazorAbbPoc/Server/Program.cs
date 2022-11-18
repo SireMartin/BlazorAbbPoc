@@ -17,7 +17,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IActualValueService, ActualValueService>();
 builder.Services.AddSingleton<IHierarchicalNameService, HierarchicalNameService>();
 builder.Services.AddSingleton<IPlcMsgDispatcher, PlcMsgDispatcher>();
-//builder.Services.AddHostedService<RabbitMqWorker>();
+builder.Services.AddHostedService<RabbitMqWorker>();
 
 builder.Services.AddDbContext<ApiDbContext>(options => options.UseNpgsql("host=postgres;port=5432;database=blogdb;username=bloguser;password=bloguser"));
 
@@ -38,6 +38,18 @@ using (var scope = ssf.CreateScope())
 {
     ApiDbContext dbContext = scope.ServiceProvider.GetService<ApiDbContext>();
     dbContext.Database.Migrate();
+    List<Cabinet> cabinets = dbContext.Cabinets.ToList();
+    foreach (var c in cabinets)
+    {
+        var temp = c;
+        string s = c.Name;
+        while (temp.ParentCabinet is not null)
+        {
+            s += $"/{temp.ParentCabinet.Name}";
+            temp = temp.ParentCabinet;
+        }
+        Console.WriteLine(s);
+    }
 }
 
 IHierarchicalNameService hierarchicalNameService = app.Services.GetRequiredService<IHierarchicalNameService>();

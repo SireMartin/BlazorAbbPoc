@@ -54,6 +54,7 @@ public class ApiDbContext : DbContext
             entityBuilder.Property(e => e.Id).HasColumnName("id");
             entityBuilder.Property(e => e.Name).HasColumnName("name");
             entityBuilder.Property(e => e.CabinetGroupId).HasColumnName("cabinetgroup_id");
+            entityBuilder.Property(e => e.ParentCabinetId).HasColumnName("parent_cabinet_id");
         });
 
         builder.Entity<CabinetGroup>(entityBuilder =>

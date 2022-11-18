@@ -3,6 +3,7 @@ using System;
 using BlazorAbbPoc.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlazorAbbPoc.Server.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221107213849_test")]
+    partial class test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,27 +208,9 @@ namespace BlazorAbbPoc.Server.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("l3_n_v");
 
-                    b.Property<int?>("PActL1")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PActL2")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PActL3")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("PActTotal")
                         .HasColumnType("integer")
                         .HasColumnName("p_act_totoal");
-
-                    b.Property<int?>("PAppL1")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PAppL2")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PAppL3")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("PAppTotal")
                         .HasColumnType("integer")
@@ -239,18 +223,6 @@ namespace BlazorAbbPoc.Server.Migrations
                     b.Property<int?>("ProtA_L_I1")
                         .HasColumnType("integer")
                         .HasColumnName("prot_a_l_i1");
-
-                    b.Property<int?>("nA")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("pReactL1")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("pReactL2")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("pReactL3")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
