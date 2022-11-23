@@ -2,25 +2,52 @@
 
 @inject IHttpClientFactory ClientFactory
 
-@if (coll is not null)
+@if (voltageColl is not null)
 {
     <TelerikChart>
         <ChartSeriesItems>
-            <ChartSeries Type="ChartSeriesType.Line" Name="L1Voltage" Data="@voltageColl" Field="@nameof(MyDataModel.L1Voltage)" 
-                CategoryField="@nameof(MyDataModel.TimeCategory)" Aggregate="ChartSeriesAggregate.Avg" />
-            <ChartSeries Type="ChartSeriesType.Line" Name="L2Voltage" Data="@voltageColl" Field="@nameof(MyDataModel.L2Voltage)" Aggregate="ChartSeriesAggregate.Avg" />
-            <ChartSeries Type="ChartSeriesType.Line" Name="L3Voltage" Data="@voltageColl" Field="@nameof(MyDataModel.L3Voltage)" Aggregate="ChartSeriesAggregate.Avg" />
+            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L1Voltage" Data="@voltageColl" XField="@nameof(VoltageDataModel.TimeStamp)" YField="@nameof(VoltageDataModel.L1Voltage)" />
+            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L2Voltage" Data="@voltageColl" XField="@nameof(VoltageDataModel.TimeStamp)" YField="@nameof(VoltageDataModel.L2Voltage)" />
+            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L3Voltage" Data="@voltageColl" XField="@nameof(VoltageDataModel.TimeStamp)" YField="@nameof(VoltageDataModel.L3Voltage)" />
         </ChartSeriesItems>
 
-        <ChartValueAxes>
-            <ChartValueAxis Color="red"></ChartValueAxis>
-        </ChartValueAxes>
+        <ChartXAxes>
+            <ChartXAxis Type="date" BaseUnit="seconds">
+                <ChartXAxisTitle Text="Time"></ChartXAxisTitle>
+                <ChartXAxisLabels Format="{0:yyyy/MM/dd}"></ChartXAxisLabels>
+            </ChartXAxis>
+        </ChartXAxes>
+    </TelerikChart>
+
+    <TelerikChart>
+        <ChartSeriesItems>
+            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L1Current" Data="@currentColl" XField="@nameof(CurrentDataModel.TimeStamp)" YField="@nameof(CurrentDataModel.L1Current)" />
+            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L2Current" Data="@currentColl" XField="@nameof(CurrentDataModel.TimeStamp)" YField="@nameof(CurrentDataModel.L2Current)" />
+            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L3Current" Data="@currentColl" XField="@nameof(CurrentDataModel.TimeStamp)" YField="@nameof(CurrentDataModel.L3Current)" />
+            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="NCurrent" Data="@currentColl" XField="@nameof(CurrentDataModel.TimeStamp)" YField="@nameof(CurrentDataModel.NCurrent)" />
+        </ChartSeriesItems>
+
+        <ChartXAxes>
+            <ChartXAxis Type="date" BaseUnit="seconds">
+                <ChartXAxisTitle Text="Time"></ChartXAxisTitle>
+                <ChartXAxisLabels Format="{0:yyyy/MM/dd}"></ChartXAxisLabels>
+            </ChartXAxis>
+        </ChartXAxes>
+
+        <ChartTitle Text="Current Over Time" />
+        <ChartLegend Position="Telerik.Blazor.ChartLegendPosition.Bottom" />
+    </TelerikChart>
+
+    <TelerikChart>
+        <ChartSeriesItems>
+            <ChartSeries Type="ChartSeriesType.Column" Name="Actual Energy" Data="@actualEnergyColl"></ChartSeries>
+        </ChartSeriesItems>
 
         <ChartCategoryAxes>
-            <ChartCategoryAxis Type="ChartCategoryAxisType.Date" BaseUnit="ChartCategoryAxisBaseUnit.Fit"></ChartCategoryAxis>
+            <ChartCategoryAxis Categories="@xAxisItems"></ChartCategoryAxis>
         </ChartCategoryAxes>
 
-        <ChartTitle Text="Voltage Over Time"></ChartTitle>
+        <ChartTitle Text="Actual Energy"></ChartTitle>
 
         <ChartLegend Position="Telerik.Blazor.ChartLegendPosition.Bottom">
         </ChartLegend>
@@ -28,22 +55,14 @@
 
     <TelerikChart>
         <ChartSeriesItems>
-            <ChartSeries Type="ChartSeriesType.Line" Name="L1Current" Data="@currentColl" Field="@nameof(MyDataModel.L1Current)"
-                         CategoryField="@nameof(MyDataModel.TimeCategory)" Aggregate="ChartSeriesAggregate.Avg" />
-            <ChartSeries Type="ChartSeriesType.Line" Name="L2Current" Data="@currentColl" Field="@nameof(MyDataModel.L2Current)" Aggregate="ChartSeriesAggregate.Avg" />
-            <ChartSeries Type="ChartSeriesType.Line" Name="L3Current" Data="@currentColl" Field="@nameof(MyDataModel.L3Current)" Aggregate="ChartSeriesAggregate.Avg" />
-            <ChartSeries Type="ChartSeriesType.Line" Name="NCurrent" Data="@currentColl" Field="@nameof(MyDataModel.NCurrent)" Aggregate="ChartSeriesAggregate.Avg" />
+            <ChartSeries Type="ChartSeriesType.Column" Name="Reactive Energy" Data="@reactiveEnergyColl"></ChartSeries>
         </ChartSeriesItems>
 
-        <ChartValueAxes>
-            <ChartValueAxis Color="red"></ChartValueAxis>
-        </ChartValueAxes>
-
         <ChartCategoryAxes>
-            <ChartCategoryAxis Type="ChartCategoryAxisType.Date" BaseUnit="ChartCategoryAxisBaseUnit.Fit"></ChartCategoryAxis>
+            <ChartCategoryAxis Categories="@xAxisItems"></ChartCategoryAxis>
         </ChartCategoryAxes>
 
-        <ChartTitle Text="Current Over Time"></ChartTitle>
+        <ChartTitle Text="Reactive Energy"></ChartTitle>
 
         <ChartLegend Position="Telerik.Blazor.ChartLegendPosition.Bottom">
         </ChartLegend>
@@ -51,22 +70,14 @@
 
     <TelerikChart>
         <ChartSeriesItems>
-            <ChartSeries Type="ChartSeriesType.Line" Name="L1ActualEnergy" Data="@actualEnergyColl" Field="@nameof(MyDataModel.L1ActualEnergy)"
-                         CategoryField="@nameof(MyDataModel.TimeCategory)" Aggregate="ChartSeriesAggregate.Avg" />
-            <ChartSeries Type="ChartSeriesType.Line" Name="L2ActualEnergy" Data="@actualEnergyColl" Field="@nameof(MyDataModel.L2ActualEnergy)" Aggregate="ChartSeriesAggregate.Avg" />
-            <ChartSeries Type="ChartSeriesType.Line" Name="L3ActualEnergy" Data="@actualEnergyColl" Field="@nameof(MyDataModel.L3ActualEnergy)" Aggregate="ChartSeriesAggregate.Avg" />
-            <ChartSeries Type="ChartSeriesType.Line" Name="TotalActualEnergy" Data="@actualEnergyColl" Field="@nameof(MyDataModel.TotalActualEnergy)" Aggregate="ChartSeriesAggregate.Avg" />
+            <ChartSeries Type="ChartSeriesType.Column" Name="Apparent Energy" Data="@apparentEnergyColl"></ChartSeries>
         </ChartSeriesItems>
 
-        <ChartValueAxes>
-            <ChartValueAxis Color="red"></ChartValueAxis>
-        </ChartValueAxes>
-
         <ChartCategoryAxes>
-            <ChartCategoryAxis Type="ChartCategoryAxisType.Date" BaseUnit="ChartCategoryAxisBaseUnit.Fit"></ChartCategoryAxis>
+            <ChartCategoryAxis Categories="@xAxisItems"></ChartCategoryAxis>
         </ChartCategoryAxes>
 
-        <ChartTitle Text="Actual Energy Over Time"></ChartTitle>
+        <ChartTitle Text="Apparent Energy"></ChartTitle>
 
         <ChartLegend Position="Telerik.Blazor.ChartLegendPosition.Bottom">
         </ChartLegend>
@@ -84,40 +95,31 @@ else
 }
 
 @code {
-    public class MyDataModel
+    public class VoltageDataModel
     {
-        public DateTime TimeCategory { get; set; }
         public int? L1Voltage { get; set; }
         public int? L2Voltage { get; set; }
         public int? L3Voltage { get; set; }
+        public DateTime TimeStamp { get; set; }
+    }
 
+    public class CurrentDataModel
+    {
         public int? L1Current { get; set; }
         public int? L2Current { get; set; }
         public int? L3Current { get; set; }
         public int? NCurrent { get; set; }
-
-        public int? L1ActualEnergy { get; set; }
-        public int? L2ActualEnergy { get; set; }
-        public int? L3ActualEnergy { get; set; }
-        public int? TotalActualEnergy { get; set; }
-
-        public int? L1ReactiveEnergy { get; set; }
-        public int? L2ReactiveEnergy { get; set; }
-        public int? L3ReactiveEnergy { get; set; }
-        public int? TotalReactiveEnergy { get; set; }
-
-        public int? L1ApparentEnergy { get; set; }
-        public int? L2ApparentEnergy { get; set; }
-        public int? L3ApparentEnergy { get; set; }
-        public int? TotalApparentEnergy { get; set; }
+        public DateTime TimeStamp { get; set; }
     }
 
-    private IEnumerable<BlazorAbbPoc.Shared.ChartData>? coll = null;
-    private IEnumerable<MyDataModel>? voltageColl;
-    private IEnumerable<MyDataModel>? currentColl;
-    private IEnumerable<MyDataModel>? actualEnergyColl;
-    private IEnumerable<MyDataModel>? reactiveEnergyColl;
-    private IEnumerable<MyDataModel>? apparentEnergyColl;
+    private BlazorAbbPoc.Shared.ChartData? chartData = null;
+    private IEnumerable<VoltageDataModel>? voltageColl;
+    private IEnumerable<CurrentDataModel>? currentColl;
+    private IEnumerable<object?>? actualEnergyColl;
+    private IEnumerable<object?>? reactiveEnergyColl;
+    private IEnumerable<object?>? apparentEnergyColl;
+    private string[] xAxisItems = new[]{"L1", "L2", "L3", "Total"};
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -125,12 +127,12 @@ else
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
         try
         {
-            coll = await httpClient.GetFromJsonAsync<IEnumerable<BlazorAbbPoc.Shared.ChartData>>("api/plcdata/chartdata/0.4.1");
-            voltageColl = coll.Select(x => new MyDataModel { TimeCategory = x.timestamp, L1Voltage = x.l1V, L2Voltage = x.l2V, L3Voltage = x.l3V });
-            currentColl = coll.Select(x => new MyDataModel { TimeCategory = x.timestamp, L1Current = x.l1V, L2Current = x.l2V, L3Current = x.l3V, NCurrent = x.nA });
-            actualEnergyColl = coll.Select(x => new MyDataModel { TimeCategory = x.timestamp, L1ActualEnergy = x.l1ActE, L2ActualEnergy = x.l2ActE, L3ActualEnergy = x.l3ActE, TotalActualEnergy = x.totActE });
-            reactiveEnergyColl = coll.Select(x => new MyDataModel { TimeCategory = x.timestamp, L1ReactiveEnergy = x.l1ReactE, L2ReactiveEnergy = x.l2ReactE, L3ReactiveEnergy = x.l3ReactE, TotalReactiveEnergy = x.totReactE });
-            apparentEnergyColl = coll.Select(x => new MyDataModel { TimeCategory = x.timestamp, L1ApparentEnergy = x.l1AppE, L2ApparentEnergy = x.l2AppE, L3ApparentEnergy = x.l3AppE, TotalApparentEnergy = x.totAppE });
+            chartData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.ChartData>("api/plcdata/chartdata/0.4.1");
+            voltageColl = chartData.TimeSeriesData.Select(x => new VoltageDataModel { TimeStamp = x.timestamp, L1Voltage = x.l1V, L2Voltage = x.l2V, L3Voltage = x.l3V });
+            currentColl = chartData.TimeSeriesData.Select(x => new CurrentDataModel { TimeStamp = x.timestamp, L1Current = x.l1V, L2Current = x.l2V, L3Current = x.l3V, NCurrent = x.nA });
+            actualEnergyColl = new object?[] { chartData.AggregatedData?.l1ActE, chartData.AggregatedData?.l2ActE, chartData.AggregatedData?.l3ActE, chartData.AggregatedData?.totActE };
+            reactiveEnergyColl = new object?[] { chartData.AggregatedData?.l1ReactE, chartData.AggregatedData?.l2ReactE, chartData.AggregatedData?.l3ReactE, chartData.AggregatedData?.totReactE };
+            apparentEnergyColl = new object?[] { chartData.AggregatedData?.l1AppE, chartData.AggregatedData?.l2AppE, chartData.AggregatedData?.l3AppE, chartData.AggregatedData?.totAppE };
         }
         catch(Exception e)
         {

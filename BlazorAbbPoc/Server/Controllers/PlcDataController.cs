@@ -30,31 +30,39 @@ namespace BlazorAbbPoc.Server.Controllers
         }
 
         [HttpGet("chartdata/{plcId}")]
-        public IEnumerable<ChartData> GetChartData(string plcId)
+        public ChartData GetChartData(string plcId)
         {
-            return _apiDbContext.Measurements.Include(x => x.Device).Where(x => x.Device.PlcDeviceId == plcId).Select(x => new ChartData
+            ChartData result = new ChartData
             {
-                timestamp = x.CreTimestamp,
-                l1V = x.L1nV,
-                l2V = x.L2nV,
-                l3V = x.L3nV,
-                l1A = x.L1A,
-                l2A = x.L2A,
-                l3A = x.L3A,
-                nA = x.nA,
-                l1ActE = x.PActL1,
-                l2ActE = x.PActL2,
-                l3ActE = x.PActL3,
-                totActE = x.PAppTotal,
-                l1ReactE = x.pReactL1,
-                l2ReactE = x.pReactL2,
-                l3ReactE = x.pReactL3,
-                totReactE = x.PReactTotal,
-                l1AppE = x.PAppL1,
-                l2AppE = x.PAppL2,
-                l3AppE = x.PAppL3,
-                totAppE = x.PAppTotal
-            });
+                TimeSeriesData = _apiDbContext.Measurements.Include(x => x.Device).Where(x => x.Device.PlcDeviceId == plcId).Select(x => new ChartData.TimeSeries
+                {
+                    timestamp = x.CreTimestamp,
+                    l1V = x.L1nV,
+                    l2V = x.L2nV,
+                    l3V = x.L3nV,
+                    l1A = x.L1A,
+                    l2A = x.L2A,
+                    l3A = x.L3A,
+                    nA = x.nA
+                })
+            };
+            Measurement? latestMeasurement = _apiDbContext.Measurements.Include(x => x.Device).Where(x => x.Device.PlcDeviceId == plcId).OrderByDescending(x => x.CreTimestamp).FirstOrDefault();
+            result.AggregatedData = new ChartData.Aggregated
+            {
+                l1ActE = latestMeasurement?.PActL1,
+                l2ActE = latestMeasurement?.PActL2,
+                l3ActE = latestMeasurement?.PActL3,
+                totActE = latestMeasurement?.PAppTotal,
+                l1ReactE = latestMeasurement?.pReactL1,
+                l2ReactE = latestMeasurement?.pReactL2,
+                l3ReactE = latestMeasurement?.pReactL3,
+                totReactE = latestMeasurement?.PReactTotal,
+                l1AppE = latestMeasurement?.PAppL1,
+                l2AppE = latestMeasurement?.PAppL2,
+                l3AppE = latestMeasurement?.PAppL3,
+                totAppE = latestMeasurement?.PAppTotal
+            };
+            return result;
         }
 
         [HttpGet("{lv}/{cg}/{c}/{d}")]
