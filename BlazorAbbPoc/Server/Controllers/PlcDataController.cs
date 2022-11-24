@@ -4,6 +4,7 @@ using BlazorAbbPoc.Shared;
 using BlazorAbbPoc.Shared.Plc;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace BlazorAbbPoc.Server.Controllers
 {
@@ -30,11 +31,13 @@ namespace BlazorAbbPoc.Server.Controllers
         }
 
         [HttpGet("chartdata/{plcId}")]
-        public ChartData GetChartData(string plcId)
+        public ChartData GetChartData([FromRoute]string plcId, [FromQuery]DateTime? fromDate, [FromQuery]DateTime? toDate)
         {
             ChartData result = new ChartData
             {
-                TimeSeriesData = _apiDbContext.Measurements.Include(x => x.Device).Where(x => x.Device.PlcDeviceId == plcId).Select(x => new ChartData.TimeSeries
+                TimeSeriesData = _apiDbContext.Measurements.Include(x => x.Device)
+                .Where(x => x.Device.PlcDeviceId == plcId && x.CreTimestamp > (fromDate ?? DateTime.Now.AddDays(-1)) && x.CreTimestamp <= (toDate ?? DateTime.Now))
+                .OrderBy(x => x.CreTimestamp).Select(x => new ChartData.TimeSeries
                 {
                     timestamp = x.CreTimestamp,
                     l1V = x.L1nV,
@@ -46,7 +49,9 @@ namespace BlazorAbbPoc.Server.Controllers
                     nA = x.nA
                 })
             };
-            Measurement? latestMeasurement = _apiDbContext.Measurements.Include(x => x.Device).Where(x => x.Device.PlcDeviceId == plcId).OrderByDescending(x => x.CreTimestamp).FirstOrDefault();
+            Measurement? latestMeasurement = _apiDbContext.Measurements.Include(x => x.Device)
+                .Where(x => x.Device.PlcDeviceId == plcId && x.CreTimestamp > (fromDate ?? DateTime.UtcNow.AddDays(-1)) && x.CreTimestamp <= (toDate ?? DateTimeOffset.UtcNow))
+                .OrderByDescending(x => x.CreTimestamp).FirstOrDefault();
             result.AggregatedData = new ChartData.Aggregated
             {
                 l1ActE = latestMeasurement?.PActL1,

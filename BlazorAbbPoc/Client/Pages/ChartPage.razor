@@ -7,6 +7,7 @@
 @inject IHttpClientFactory ClientFactory
 
 <PlotlyChart @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart" />
+<TelerikButton OnClick="OnButtonClick">Update</TelerikButton>
 
 @if (voltageColl is not null)
 {
@@ -167,27 +168,33 @@ else
                 {
                     Name = "L1 Voltage",
                     Mode = ModeFlag.Lines | ModeFlag.Markers,
-                    X = chartData.TimeSeriesData.OrderBy(x => x.timestamp).Select(x => (object)x.timestamp).ToList(),
-                    Y = chartData.TimeSeriesData.OrderBy(x => x.timestamp).Select(x => (object)x.l1V).ToList()
+                    X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
+                    Y = chartData.TimeSeriesData.Select(x => (object)x.l1V).ToList()
                 });
             await chart.AddTrace(new Scatter
                 {
                     Name = "L2 Voltage",
                     Mode = ModeFlag.Lines | ModeFlag.Markers,
-                    X = chartData.TimeSeriesData.OrderBy(x => x.timestamp).Select(x => (object)x.timestamp).ToList(),
-                    Y = chartData.TimeSeriesData.OrderBy(x => x.timestamp).Select(x => (object)x.l2V).ToList()
+                    X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
+                    Y = chartData.TimeSeriesData.Select(x => (object)x.l2V).ToList()
                 });
             await chart.AddTrace(new Scatter
                 {
                     Name = "L3 Voltage",
                     Mode = ModeFlag.Lines | ModeFlag.Markers,
-                    X = chartData.TimeSeriesData.OrderBy(x => x.timestamp).Select(x => (object)x.timestamp).ToList(),
-                    Y = chartData.TimeSeriesData.OrderBy(x => x.timestamp).Select(x => (object)x.l3V).ToList()
+                    X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
+                    Y = chartData.TimeSeriesData.Select(x => (object)x.l3V).ToList()
                 });
             currentColl = chartData.TimeSeriesData.Select(x => new CurrentDataModel { TimeStamp = x.timestamp, L1Current = x.l1V, L2Current = x.l2V, L3Current = x.l3V, NCurrent = x.nA });
             actualEnergyColl = new object?[] { chartData.AggregatedData?.l1ActE, chartData.AggregatedData?.l2ActE, chartData.AggregatedData?.l3ActE, chartData.AggregatedData?.totActE };
             reactiveEnergyColl = new object?[] { chartData.AggregatedData?.l1ReactE, chartData.AggregatedData?.l2ReactE, chartData.AggregatedData?.l3ReactE, chartData.AggregatedData?.totReactE };
             apparentEnergyColl = new object?[] { chartData.AggregatedData?.l1AppE, chartData.AggregatedData?.l2AppE, chartData.AggregatedData?.l3AppE, chartData.AggregatedData?.totAppE };
         }
+    }
+
+    private async Task OnButtonClick(MouseEventArgs args)
+    {
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        chartData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.ChartData>($"api/plcdata/chartdata/0.4.1?fromDate={DateTime.Now.AddDays(-1):yyyy-MM-ddTHH:mm}&toDate={DateTime.Now:yyyy-MM-ddTHH:mm}");
     }
 }
