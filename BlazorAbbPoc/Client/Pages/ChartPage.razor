@@ -6,10 +6,11 @@
 
 @inject IHttpClientFactory ClientFactory
 
-<PlotlyChart @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart" />
+<PlotlyChart @bind-Config="voltageChartConfig" @bind-Layout="voltageChartLayout" @bind-Data="voltageChartData" @ref="voltageChart" />
 <TelerikButton OnClick="OnButtonClick">Update</TelerikButton>
+<PlotlyChart @bind-Config="currentChartConfig" @bind-Layout="currentChartLayout" @bind-Data="currentChartData" @ref="currentChart" />
 
-@if (voltageColl is not null)
+@if (actualEnergyColl is not null && reactiveEnergyColl is not null && apparentEnergyColl is not null)
 {
     @*<TelerikChart>
         <ChartSeriesItems>
@@ -43,7 +44,7 @@
 
         <ChartTitle Text="Current Over Time" />
         <ChartLegend Position="Telerik.Blazor.ChartLegendPosition.Bottom" />
-    </TelerikChart>
+    </TelerikChart>*@
 
     <TelerikChart>
         <ChartSeriesItems>
@@ -88,7 +89,7 @@
 
         <ChartLegend Position="Telerik.Blazor.ChartLegendPosition.Bottom">
         </ChartLegend>
-    </TelerikChart>*@
+    </TelerikChart>
 }
 else
 {
@@ -102,6 +103,8 @@ else
 }
 
 @code {
+
+    #region Voltage
     public class VoltageDataModel
     {
         public int? L1Voltage { get; set; }
@@ -110,23 +113,13 @@ else
         public DateTimeOffset TimeStamp { get; set; }
     }
 
-    public class CurrentDataModel
-    {
-        public int? L1Current { get; set; }
-        public int? L2Current { get; set; }
-        public int? L3Current { get; set; }
-        public int? NCurrent { get; set; }
-        public DateTimeOffset TimeStamp { get; set; }
-    }
-
-    //plotly
-    private PlotlyChart chart;
-    private Config config = new()
+    private PlotlyChart voltageChart;
+    private Config voltageChartConfig = new()
     {
         Responsive = true
     };
 
-    private IList<ITrace> data = new List<ITrace>
+    private IList<ITrace> voltageChartData = new List<ITrace>
     {
         new Scatter
         {
@@ -137,18 +130,60 @@ else
         }
     };
 
-    private Layout layout = new()
+    private Layout voltageChartLayout = new()
     {
-            Title = new Title { Text = "Scatter" },
+            Title = new Title { Text = "Voltage over time" },
             YAxis = new List<YAxis>
         {
             new()
             {
-                Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Scatter Unit" },
-                RangeMode = Plotly.Blazor.LayoutLib.YAxisLib.RangeModeEnum.ToZero
+                Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Volt" },
+                RangeMode = Plotly.Blazor.LayoutLib.YAxisLib.RangeModeEnum.ToZero   //always show the 0 point of Y axis
             }
         }
     };
+    #endregion
+
+    #region Current
+    public class CurrentDataModel
+    {
+        public int? L1Current { get; set; }
+        public int? L2Current { get; set; }
+        public int? L3Current { get; set; }
+        public int? NCurrent { get; set; }
+        public DateTimeOffset TimeStamp { get; set; }
+    }
+
+    private PlotlyChart currentChart;
+    private Config currentChartConfig = new()
+        {
+            Responsive = true
+        };
+
+    private IList<ITrace> currentChartData = new List<ITrace>
+    {
+        new Scatter
+        {
+            Name = "ScatterTrace",
+            Mode = ModeFlag.Lines | ModeFlag.Markers,
+            X = new List<object>(),
+            Y = new List<object>()
+        }
+    };
+
+    private Layout currentChartLayout = new()
+        {
+            Title = new Title { Text = "Current over time" },
+            YAxis = new List<YAxis>
+        {
+            new()
+            {
+                Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Ampere" },
+                RangeMode = Plotly.Blazor.LayoutLib.YAxisLib.RangeModeEnum.ToZero   //always show the 0 point of Y axis
+            }
+        }
+        };
+    #endregion
 
     private BlazorAbbPoc.Shared.ChartData? chartData = null;
     private IEnumerable<VoltageDataModel>? voltageColl;
@@ -157,41 +192,93 @@ else
     private IEnumerable<object?>? reactiveEnergyColl;
     private IEnumerable<object?>? apparentEnergyColl;
     private string[] xAxisItems = new[]{"L1", "L2", "L3", "Total"};
+    private bool isRendered = false;
+    private bool isInitialized = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitializedAsync();
+
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        chartData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.ChartData>("api/plcdata/chartdata/0.4.1");
+        actualEnergyColl = new object?[] { chartData.AggregatedData?.l1ActE, chartData.AggregatedData?.l2ActE, chartData.AggregatedData?.l3ActE, chartData.AggregatedData?.totActE };
+        reactiveEnergyColl = new object?[] { chartData.AggregatedData?.l1ReactE, chartData.AggregatedData?.l2ReactE, chartData.AggregatedData?.l3ReactE, chartData.AggregatedData?.totReactE };
+        apparentEnergyColl = new object?[] { chartData.AggregatedData?.l1AppE, chartData.AggregatedData?.l2AppE, chartData.AggregatedData?.l3AppE, chartData.AggregatedData?.totAppE };
+        if(isRendered)
+        {
+            Console.WriteLine("Draw from OnInitializedAsync");
+            await Draw();
+        }
+        Console.WriteLine("Setting isInitialized to true");
+        isInitialized = true;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-
-            chartData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.ChartData>("api/plcdata/chartdata/0.4.1");
-            //voltageColl = chartData.TimeSeriesData.Select(x => new VoltageDataModel { TimeStamp = x.timestamp, L1Voltage = x.l1V, L2Voltage = x.l2V, L3Voltage = x.l3V });
-            await chart.AddTrace(new Scatter
-                {
-                    Name = "L1 Voltage",
-                    Mode = ModeFlag.Lines | ModeFlag.Markers,
-                    X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
-                    Y = chartData.TimeSeriesData.Select(x => (object)x.l1V).ToList()
-                });
-            await chart.AddTrace(new Scatter
-                {
-                    Name = "L2 Voltage",
-                    Mode = ModeFlag.Lines | ModeFlag.Markers,
-                    X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
-                    Y = chartData.TimeSeriesData.Select(x => (object)x.l2V).ToList()
-                });
-            await chart.AddTrace(new Scatter
-                {
-                    Name = "L3 Voltage",
-                    Mode = ModeFlag.Lines | ModeFlag.Markers,
-                    X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
-                    Y = chartData.TimeSeriesData.Select(x => (object)x.l3V).ToList()
-                });
-            currentColl = chartData.TimeSeriesData.Select(x => new CurrentDataModel { TimeStamp = x.timestamp, L1Current = x.l1V, L2Current = x.l2V, L3Current = x.l3V, NCurrent = x.nA });
-            actualEnergyColl = new object?[] { chartData.AggregatedData?.l1ActE, chartData.AggregatedData?.l2ActE, chartData.AggregatedData?.l3ActE, chartData.AggregatedData?.totActE };
-            reactiveEnergyColl = new object?[] { chartData.AggregatedData?.l1ReactE, chartData.AggregatedData?.l2ReactE, chartData.AggregatedData?.l3ReactE, chartData.AggregatedData?.totReactE };
-            apparentEnergyColl = new object?[] { chartData.AggregatedData?.l1AppE, chartData.AggregatedData?.l2AppE, chartData.AggregatedData?.l3AppE, chartData.AggregatedData?.totAppE };
+            if(isInitialized)
+            {
+                Console.WriteLine("Draw from OnAfterRenderAsync");
+                await Draw();
+            }
+            Console.WriteLine("Setting isRendered to true");
+            isRendered = true;
         }
+    }
+
+    private async Task Draw()
+    {
+        await voltageChart.AddTrace(new Scatter
+            {
+                Name = "L1 Voltage",
+                Mode = ModeFlag.Lines | ModeFlag.Markers,
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l1V).ToList()
+            });
+        await voltageChart.AddTrace(new Scatter
+            {
+                Name = "L2 Voltage",
+                Mode = ModeFlag.Lines | ModeFlag.Markers,
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l2V).ToList()
+            });
+        await voltageChart.AddTrace(new Scatter
+            {
+                Name = "L3 Voltage",
+                Mode = ModeFlag.Lines | ModeFlag.Markers,
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l3V).ToList()
+            });
+
+        await currentChart.AddTrace(new Scatter
+            {
+                Name = "L1 Current",
+                Mode = ModeFlag.Lines | ModeFlag.Markers,
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l1A).ToList()
+            });
+        await currentChart.AddTrace(new Scatter
+            {
+                Name = "L2 Current",
+                Mode = ModeFlag.Lines | ModeFlag.Markers,
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l2A).ToList()
+            });
+        await currentChart.AddTrace(new Scatter
+            {
+                Name = "L3 Current",
+                Mode = ModeFlag.Lines | ModeFlag.Markers,
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l3A).ToList()
+            });
+        await currentChart.AddTrace(new Scatter
+            {
+                Name = "N Current",
+                Mode = ModeFlag.Lines | ModeFlag.Markers,
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.nA).ToList()
+            });
     }
 
     private async Task OnButtonClick(MouseEventArgs args)
