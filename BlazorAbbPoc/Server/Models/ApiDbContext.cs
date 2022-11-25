@@ -76,7 +76,7 @@ public class ApiDbContext : DbContext
 
             entityBuilder.Property(e => e.Id).HasColumnName("id");
             entityBuilder.Property(e => e.DeviceId).HasColumnName("device_id");
-            entityBuilder.Property(e => e.CreTimestamp).HasColumnName("cre_timestamp").HasDefaultValueSql("now()");
+            entityBuilder.Property(e => e.CreTimestamp).HasColumnName("cre_timestamp");
             entityBuilder.Property(e => e.L1A).HasColumnName("l1_a");
             entityBuilder.Property(e => e.L2A).HasColumnName("l2_a");
             entityBuilder.Property(e => e.L3A).HasColumnName("l3_a");
