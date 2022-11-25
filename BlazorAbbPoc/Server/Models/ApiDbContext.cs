@@ -7,7 +7,7 @@ public class ApiDbContext : DbContext
 {
     public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
     {
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        //AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
 
     public DbSet<Device>? Devices { get; set; }
@@ -72,6 +72,7 @@ public class ApiDbContext : DbContext
             entityBuilder.HasKey(e => e.Id);
             entityBuilder.ToTable("measurements");
             entityBuilder.HasIndex(e => e.CreTimestamp);
+            entityBuilder.HasIndex(e => e.DeviceId);
 
             entityBuilder.Property(e => e.Id).HasColumnName("id");
             entityBuilder.Property(e => e.DeviceId).HasColumnName("device_id");

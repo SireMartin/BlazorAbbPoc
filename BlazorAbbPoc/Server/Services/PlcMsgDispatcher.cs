@@ -79,7 +79,8 @@ public class PlcMsgDispatcher : IPlcMsgDispatcher
                     PAppL3 = argMsg.pAppL3,
                     PAppTotal = argMsg.pActTotal,
                     Frq = argMsg.frq,
-                    ProtA_L_I1 = argMsg.ProtA_L_I1
+                    ProtA_L_I1 = argMsg.ProtA_L_I1,
+                    CreTimestamp = DateTimeOffset.UtcNow
                 });
             }
             await dbContext.SaveChangesAsync();

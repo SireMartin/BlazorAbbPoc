@@ -107,7 +107,7 @@ else
         public int? L1Voltage { get; set; }
         public int? L2Voltage { get; set; }
         public int? L3Voltage { get; set; }
-        public DateTime TimeStamp { get; set; }
+        public DateTimeOffset TimeStamp { get; set; }
     }
 
     public class CurrentDataModel
@@ -116,7 +116,7 @@ else
         public int? L2Current { get; set; }
         public int? L3Current { get; set; }
         public int? NCurrent { get; set; }
-        public DateTime TimeStamp { get; set; }
+        public DateTimeOffset TimeStamp { get; set; }
     }
 
     //plotly
@@ -144,7 +144,8 @@ else
         {
             new()
             {
-                Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Scatter Unit" }
+                Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Scatter Unit" },
+                RangeMode = Plotly.Blazor.LayoutLib.YAxisLib.RangeModeEnum.ToZero
             }
         }
     };
@@ -162,6 +163,7 @@ else
         if (firstRender)
         {
             HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+
             chartData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.ChartData>("api/plcdata/chartdata/0.4.1");
             //voltageColl = chartData.TimeSeriesData.Select(x => new VoltageDataModel { TimeStamp = x.timestamp, L1Voltage = x.l1V, L2Voltage = x.l2V, L3Voltage = x.l3V });
             await chart.AddTrace(new Scatter

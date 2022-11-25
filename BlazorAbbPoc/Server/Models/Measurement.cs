@@ -5,7 +5,7 @@ public class Measurement
     public int Id { get; set; }
     public int DeviceId { get; set; }
     public Device Device { get; set; }
-    public DateTime CreTimestamp { get; set; }
+    public DateTimeOffset CreTimestamp { get; set; }
 
     public int? L1A { get; set; }
     public int? L2A { get; set; }

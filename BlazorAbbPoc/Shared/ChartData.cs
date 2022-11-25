@@ -18,7 +18,7 @@ public class ChartData
         public int? l3A { get; set; }
         public int? nA { get; set; }
 
-        public DateTime timestamp { get; set; }
+        public DateTimeOffset timestamp { get; set; }
     }
 
     public class Aggregated
