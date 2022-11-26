@@ -1,4 +1,4 @@
-﻿using BlazorAbbPoc.Server.Models;
+﻿    using BlazorAbbPoc.Server.Models;
 using BlazorAbbPoc.Server.Services;
 using BlazorAbbPoc.Shared;
 using BlazorAbbPoc.Shared.Plc;
@@ -15,12 +15,14 @@ namespace BlazorAbbPoc.Server.Controllers
         private readonly ApiDbContext _apiDbContext;
         private readonly IActualValueService _actualValueService;
         private readonly IPlcMsgDispatcher _plcMsgDispatcher;
+        private readonly IHierarchicalNameService _hierarchicalNameService;
 
-        public PlcDataController(IActualValueService actualValueService, IPlcMsgDispatcher plcMsgDispatcher, ApiDbContext apiDbContext)
+        public PlcDataController(IActualValueService actualValueService, IPlcMsgDispatcher plcMsgDispatcher, ApiDbContext apiDbContext, IHierarchicalNameService hierarchicalNameService)
         {
             _actualValueService = actualValueService;
             _plcMsgDispatcher = plcMsgDispatcher;
             _apiDbContext = apiDbContext;
+            _hierarchicalNameService = hierarchicalNameService;
         }
 
         [HttpPost]
@@ -30,9 +32,10 @@ namespace BlazorAbbPoc.Server.Controllers
             return Ok();
         }
 
-        [HttpGet("chartdata/{plcId}")]
-        public ChartData GetChartData([FromRoute]string plcId, [FromQuery]DateTimeOffset? fromDate, [FromQuery]DateTimeOffset? toDate)
+        [HttpGet("interval/{lv}/{cg}/{c}/{d}")]
+        public ChartData GetChartData([FromRoute] string lv, [FromRoute] string cg, [FromRoute] string c, [FromRoute] string d, [FromQuery]DateTimeOffset? fromDate, [FromQuery]DateTimeOffset? toDate)
         {
+            string plcId = _hierarchicalNameService.GetPlcDeviceIdForHierarchicalName($"{lv}/{cg}/{c}/{d}");
             ChartData result = new ChartData
             {
                 TimeSeriesData = _apiDbContext.Measurements.Include(x => x.Device)
@@ -72,8 +75,8 @@ namespace BlazorAbbPoc.Server.Controllers
             return result;
         }
 
-        [HttpGet("{lv}/{cg}/{c}/{d}")]
-        public Shared.Messages.ActualValuesDto GetActualPlcDataForHierarchicalName(string lv, string cg, string c, string d)
+        [HttpGet("actual/{lv}/{cg}/{c}/{d}")]
+        public Shared.Messages.ActualValuesDto GetActualPlcDataForHierarchicalName([FromRoute] string lv, [FromRoute] string cg, [FromRoute] string c, [FromRoute] string d)
         {
             return _actualValueService.GetActualValuesForHierarchicalName($"{lv}/{cg}/{c}/{d}");
         }

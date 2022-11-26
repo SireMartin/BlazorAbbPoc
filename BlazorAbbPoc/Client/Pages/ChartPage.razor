@@ -1,10 +1,11 @@
-﻿@page "/chart"
+﻿@page "/Chart/{*itemId}"
 
 @using Plotly.Blazor.Traces.ScatterLib
 @using Title = Plotly.Blazor.LayoutLib.Title
 @using YAxis = Plotly.Blazor.LayoutLib.YAxis
 
 @inject IHttpClientFactory ClientFactory
+@inject NavigationManager NavMan
 
 <PlotlyChart @bind-Config="voltageChartConfig" @bind-Layout="voltageChartLayout" @bind-Data="voltageChartData" @ref="voltageChart" />
 <TelerikButton OnClick="OnButtonClick">Update</TelerikButton>
@@ -12,40 +13,6 @@
 
 @if (actualEnergyColl is not null && reactiveEnergyColl is not null && apparentEnergyColl is not null)
 {
-    @*<TelerikChart>
-        <ChartSeriesItems>
-            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L1Voltage" Data="@voltageColl" XField="@nameof(VoltageDataModel.TimeStamp)" YField="@nameof(VoltageDataModel.L1Voltage)" />
-            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L2Voltage" Data="@voltageColl" XField="@nameof(VoltageDataModel.TimeStamp)" YField="@nameof(VoltageDataModel.L2Voltage)" />
-            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L3Voltage" Data="@voltageColl" XField="@nameof(VoltageDataModel.TimeStamp)" YField="@nameof(VoltageDataModel.L3Voltage)" />
-        </ChartSeriesItems>
-
-        <ChartXAxes>
-            <ChartXAxis Type="date" BaseUnit="seconds">
-                <ChartXAxisTitle Text="Time"></ChartXAxisTitle>
-                <ChartXAxisLabels Format="{0:yyyy/MM/dd}"></ChartXAxisLabels>
-            </ChartXAxis>
-        </ChartXAxes>
-    </TelerikChart>
-
-    <TelerikChart>
-        <ChartSeriesItems>
-            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L1Current" Data="@currentColl" XField="@nameof(CurrentDataModel.TimeStamp)" YField="@nameof(CurrentDataModel.L1Current)" />
-            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L2Current" Data="@currentColl" XField="@nameof(CurrentDataModel.TimeStamp)" YField="@nameof(CurrentDataModel.L2Current)" />
-            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="L3Current" Data="@currentColl" XField="@nameof(CurrentDataModel.TimeStamp)" YField="@nameof(CurrentDataModel.L3Current)" />
-            <ChartSeries Type="ChartSeriesType.ScatterLine" Name="NCurrent" Data="@currentColl" XField="@nameof(CurrentDataModel.TimeStamp)" YField="@nameof(CurrentDataModel.NCurrent)" />
-        </ChartSeriesItems>
-
-        <ChartXAxes>
-            <ChartXAxis Type="date" BaseUnit="seconds">
-                <ChartXAxisTitle Text="Time"></ChartXAxisTitle>
-                <ChartXAxisLabels Format="{0:yyyy/MM/dd}"></ChartXAxisLabels>
-            </ChartXAxis>
-        </ChartXAxes>
-
-        <ChartTitle Text="Current Over Time" />
-        <ChartLegend Position="Telerik.Blazor.ChartLegendPosition.Bottom" />
-    </TelerikChart>*@
-
     <TelerikChart>
         <ChartSeriesItems>
             <ChartSeries Type="ChartSeriesType.Column" Name="Actual Energy" Data="@actualEnergyColl"></ChartSeries>
@@ -185,6 +152,13 @@ else
         };
     #endregion
 
+    [Parameter]
+    public string? ItemId { get; set; }
+    [Parameter, SupplyParameterFromQuery]
+    public DateTime? FromDate { get; set; }
+    [Parameter, SupplyParameterFromQuery]
+    public DateTime? ToDate { get; set; }
+
     private BlazorAbbPoc.Shared.ChartData? chartData = null;
     private IEnumerable<VoltageDataModel>? voltageColl;
     private IEnumerable<CurrentDataModel>? currentColl;
@@ -195,16 +169,21 @@ else
     private bool isRendered = false;
     private bool isInitialized = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        base.OnInitializedAsync();
+        await base.OnParametersSetAsync();
 
         HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-        chartData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.ChartData>("api/plcdata/chartdata/0.4.1");
+        string routeWithParams = NavMan.GetUriWithQueryParameters($"api/plcdata/interval/{ItemId}", new Dictionary<string, object?>
+        {
+            {nameof(FromDate), FromDate },
+            {nameof(ToDate), ToDate }
+        });
+        chartData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.ChartData>(routeWithParams);
         actualEnergyColl = new object?[] { chartData.AggregatedData?.l1ActE, chartData.AggregatedData?.l2ActE, chartData.AggregatedData?.l3ActE, chartData.AggregatedData?.totActE };
         reactiveEnergyColl = new object?[] { chartData.AggregatedData?.l1ReactE, chartData.AggregatedData?.l2ReactE, chartData.AggregatedData?.l3ReactE, chartData.AggregatedData?.totReactE };
         apparentEnergyColl = new object?[] { chartData.AggregatedData?.l1AppE, chartData.AggregatedData?.l2AppE, chartData.AggregatedData?.l3AppE, chartData.AggregatedData?.totAppE };
-        if(isRendered)
+        if (isRendered)
         {
             Console.WriteLine("Draw from OnInitializedAsync");
             await Draw();
