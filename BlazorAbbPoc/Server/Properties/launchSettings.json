@@ -3,7 +3,7 @@
     "BlazorAbbPoc.Server": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "Chart/LV01/AutoBoxes/K0-4/MainBreaker",
+      "launchUrl": "https://localhost:7135/Chart/LV01/AutoBoxes/K0-4/MainBreaker?FromDate=2022-11-24T00:00:00&ToDate=2022-11-27T00:00:00",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

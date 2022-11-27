@@ -1,14 +1,26 @@
 ﻿@page "/Chart/{*itemId}"
 
+@using BlazorAbbPoc.Client.Data;
+@using BlazorAbbPoc.Client.Store.Actions;
+@using BlazorAbbPoc.Client.Store;
 @using Plotly.Blazor.Traces.ScatterLib
 @using Title = Plotly.Blazor.LayoutLib.Title
 @using YAxis = Plotly.Blazor.LayoutLib.YAxis
+@using Fluxor
 
 @inject IHttpClientFactory ClientFactory
 @inject NavigationManager NavMan
+@inject IDispatcher Dispatcher
+@inject IState<NavigationConfigurationState> NavConfigState
+
+@if(NavConfigState is not null)
+{
+    <TelerikDropDownList Data="@NavConfigState.Value.Cont.Where(x => x.Key.Split("/").Count() == 4).Select(x => x.Key)" Value="ItemId" 
+        ValueChanged="@((string newValue) =>OnSelectionChanged(newValue))" />   
+}
 
 <PlotlyChart @bind-Config="voltageChartConfig" @bind-Layout="voltageChartLayout" @bind-Data="voltageChartData" @ref="voltageChart" />
-<TelerikButton OnClick="OnButtonClick">Update</TelerikButton>
+
 <PlotlyChart @bind-Config="currentChartConfig" @bind-Layout="currentChartLayout" @bind-Data="currentChartData" @ref="currentChart" />
 
 @if (actualEnergyColl is not null && reactiveEnergyColl is not null && apparentEnergyColl is not null)
@@ -169,6 +181,14 @@ else
     private bool isRendered = false;
     private bool isInitialized = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        NavItem? navConfig = await httpClient.GetFromJsonAsync<NavItem>("api/Config/navigation");
+        Dispatcher.Dispatch(new NavigationConfigurationChangedAction(navConfig));
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
@@ -208,6 +228,9 @@ else
 
     private async Task Draw()
     {
+        voltageChart.Clear();
+        currentChart.Clear();
+
         await voltageChart.AddTrace(new Scatter
             {
                 Name = "L1 Voltage",
@@ -260,9 +283,19 @@ else
             });
     }
 
-    private async Task OnButtonClick(MouseEventArgs args)
+    //private async Task OnButtonClick(MouseEventArgs args)
+    //{
+    //    HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+    //    chartData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.ChartData>($"api/plcdata/chartdata/0.4.1?fromDate={DateTime.Now.AddDays(-1):yyyy-MM-ddTHH:mm}&toDate={DateTime.Now:yyyy-MM-ddTHH:mm}");
+    //}
+
+    private void OnSelectionChanged(string newValue)
     {
-        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
-        chartData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.ChartData>($"api/plcdata/chartdata/0.4.1?fromDate={DateTime.Now.AddDays(-1):yyyy-MM-ddTHH:mm}&toDate={DateTime.Now:yyyy-MM-ddTHH:mm}");
+        string routeWithParams = NavMan.GetUriWithQueryParameters($"Chart/{newValue}", new Dictionary<string, object?>
+        {
+            {nameof(FromDate), FromDate },
+            {nameof(ToDate), ToDate }
+        });
+        NavMan.NavigateTo(routeWithParams);
     }
 }
