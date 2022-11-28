@@ -13,11 +13,24 @@
 @inject IDispatcher Dispatcher
 @inject IState<NavigationConfigurationState> NavConfigState
 
-@if(NavConfigState is not null)
-{
-    <TelerikDropDownList Data="@NavConfigState.Value.Cont.Where(x => x.Key.Split("/").Count() == 4).Select(x => x.Key)" Value="ItemId" 
-        ValueChanged="@((string newValue) =>OnSelectionChanged(newValue))" />   
-}
+<div class="container">
+    <div class="row">
+        <label for="idFromDate">FromDate</label>
+        <TelerikDateTimePicker Id="idFromDate" @bind-Value="FromDate" Format="dd/MM/yyyy HH:mm:ss" OnChange="OnDateChanged" Width="250px" />
+    </div>
+    <div class="row">
+        <label for="idToDate">ToDate</label>
+        <TelerikDateTimePicker Id="idToDate" @bind-Value="ToDate" Format="dd/MM/yyyy HH:mm:ss" OnChange="OnDateChanged" Width="250px" />
+    </div>
+    @if (NavConfigState is not null)
+    {
+        <div class="row">
+            <label for="idDevice">Device:</label>
+            <TelerikDropDownList Data="@NavConfigState.Value.Cont.Where(x => x.Key.Split("/").Count() == 4).Select(x => x.Key)" Value="ItemId"
+                                 id="idDevice" ValueChanged="@((string newValue) =>OnSelectionChanged(newValue))" Width="350px" />
+        </div>
+    }
+</div>
 
 <PlotlyChart @bind-Config="voltageChartConfig" @bind-Layout="voltageChartLayout" @bind-Data="voltageChartData" @ref="voltageChart" />
 
@@ -297,5 +310,11 @@ else
             {nameof(ToDate), ToDate }
         });
         NavMan.NavigateTo(routeWithParams);
+    }
+
+    private void OnDateChanged(object arg)
+    {
+        DateTime newFromDate = (DateTime)arg;
+        OnSelectionChanged(ItemId);
     }
 }
