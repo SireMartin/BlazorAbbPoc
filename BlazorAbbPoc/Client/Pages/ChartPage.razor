@@ -185,8 +185,6 @@ else
     public DateTime? ToDate { get; set; }
 
     private BlazorAbbPoc.Shared.ChartData? chartData = null;
-    private IEnumerable<VoltageDataModel>? voltageColl;
-    private IEnumerable<CurrentDataModel>? currentColl;
     private IEnumerable<object?>? actualEnergyColl;
     private IEnumerable<object?>? reactiveEnergyColl;
     private IEnumerable<object?>? apparentEnergyColl;
@@ -212,6 +210,7 @@ else
             {nameof(FromDate), FromDate },
             {nameof(ToDate), ToDate }
         });
+        routeWithParams = $"api/plcdata/interval/{ItemId}{(FromDate is not null || ToDate is not null ? "?" : String.Empty)}{(FromDate is not null ? $"FromDate={FromDate:yyyy-MM-ddTHH:mm:ss}&" : String.Empty)}{(ToDate is not null ? $"ToDate={ToDate:yyyy-MM-ddTHH:mm:ss}" : String.Empty)}";
         chartData = await httpClient.GetFromJsonAsync<BlazorAbbPoc.Shared.ChartData>(routeWithParams);
         actualEnergyColl = new object?[] { chartData.AggregatedData?.l1ActE, chartData.AggregatedData?.l2ActE, chartData.AggregatedData?.l3ActE, chartData.AggregatedData?.totActE };
         reactiveEnergyColl = new object?[] { chartData.AggregatedData?.l1ReactE, chartData.AggregatedData?.l2ReactE, chartData.AggregatedData?.l3ReactE, chartData.AggregatedData?.totReactE };
@@ -241,8 +240,8 @@ else
 
     private async Task Draw()
     {
-        voltageChart.Clear();
-        currentChart.Clear();
+        await voltageChart.Clear();
+        await currentChart.Clear();
 
         await voltageChart.AddTrace(new Scatter
             {
@@ -309,6 +308,7 @@ else
             {nameof(FromDate), FromDate },
             {nameof(ToDate), ToDate }
         });
+        routeWithParams = $"Chart/{ItemId}{(FromDate is not null || ToDate is not null ? "?" : String.Empty)}{(FromDate is not null ? $"FromDate={FromDate:yyyy-MM-ddTHH:mm:ss}&" : String.Empty)}{(ToDate is not null ? $"ToDate={ToDate:yyyy-MM-ddTHH:mm:ss}" : String.Empty)}";
         NavMan.NavigateTo(routeWithParams);
     }
 
