@@ -32,9 +32,13 @@
     }
 </div>
 
-<PlotlyChart @bind-Config="voltageChartConfig" @bind-Layout="voltageChartLayout" @bind-Data="voltageChartData" @ref="voltageChart" />
+<div style="height: 500px">
+    <PlotlyChart @bind-Config="voltageChartConfig" @bind-Layout="voltageChartLayout" @bind-Data="voltageChartData" @ref="voltageChart" />
+</div>
 
-<PlotlyChart @bind-Config="currentChartConfig" @bind-Layout="currentChartLayout" @bind-Data="currentChartData" @ref="currentChart" />
+<div style="height: 500px">
+    <PlotlyChart @bind-Config="currentChartConfig" @bind-Layout="currentChartLayout" @bind-Data="currentChartData" @ref="currentChart" />
+</div>
 
 @if (actualEnergyColl is not null && reactiveEnergyColl is not null && apparentEnergyColl is not null)
 {
@@ -308,7 +312,7 @@ else
             {nameof(FromDate), FromDate },
             {nameof(ToDate), ToDate }
         });
-        routeWithParams = $"Chart/{ItemId}{(FromDate is not null || ToDate is not null ? "?" : String.Empty)}{(FromDate is not null ? $"FromDate={FromDate:yyyy-MM-ddTHH:mm:ss}&" : String.Empty)}{(ToDate is not null ? $"ToDate={ToDate:yyyy-MM-ddTHH:mm:ss}" : String.Empty)}";
+        routeWithParams = $"Chart/{ItemId}{(FromDate is not null || ToDate is not null ? "?" : String.Empty)}{(FromDate is not null ? $"FromDate={FromDate:yyyy-MM-ddTHH:mm:ss}{(ToDate is not null ? "&" : string.Empty)}" : String.Empty)}{(ToDate is not null ? $"ToDate={ToDate:yyyy-MM-ddTHH:mm:ss}" : String.Empty)}";
         NavMan.NavigateTo(routeWithParams);
     }
 
