@@ -1,6 +1,7 @@
 ﻿using BlazorAbbPoc.Server.Models;
 using BlazorAbbPoc.Server.Services;
 using BlazorAbbPoc.Shared.Messages;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace BlazorAbbPoc.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ConfigController : ControllerBase
     {
         private readonly ApiDbContext _dbContext;
@@ -22,6 +24,7 @@ namespace BlazorAbbPoc.Server.Controllers
         }
 
         [HttpGet("devices")]
+        [Authorize(Roles = "Expert")]
         public IEnumerable<DeviceDto> GetAllDevices()
         {
             return _dbContext.Devices.Include(x => x.Cabinet).Select(x => new DeviceDto

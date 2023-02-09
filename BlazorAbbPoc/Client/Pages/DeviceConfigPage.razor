@@ -209,7 +209,8 @@ else
 
     private async Task LoadData()
     {
-        HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        //HttpClient httpClient = ClientFactory.CreateClient("WebApi");
+        HttpClient httpClient = ClientFactory.CreateClient("SecureApiClient");
         Devices = await httpClient.GetFromJsonAsync<IEnumerable<DeviceDto>>("api/Config/devices");
         DeviceTypes = await httpClient.GetFromJsonAsync<IEnumerable<DeviceTypeDto>>("api/Config/devicetypes");
         Cabinets = await httpClient.GetFromJsonAsync<IEnumerable<CabinetDto>>("api/Config/cabinets");

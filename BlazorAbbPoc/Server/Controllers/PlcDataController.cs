@@ -2,6 +2,7 @@
 using BlazorAbbPoc.Server.Services;
 using BlazorAbbPoc.Shared;
 using BlazorAbbPoc.Shared.Plc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

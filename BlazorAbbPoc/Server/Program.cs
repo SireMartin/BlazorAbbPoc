@@ -4,6 +4,7 @@ using BlazorAbbPoc.Server.Models;
 using Microsoft.Extensions.DependencyInjection;
 using BlazorAbbPoc.Server.Workers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,7 @@ builder.Services.AddControllers().AddJsonOptions(configure =>
     configure.JsonSerializerOptions.IncludeFields = true;
 });
 builder.Services.AddRazorPages();
-
+    
 builder.Services.AddSingleton<IActualValueService, ActualValueService>();
 builder.Services.AddSingleton<IHierarchicalNameService, HierarchicalNameService>();
 builder.Services.AddSingleton<IPlcMsgDispatcher, PlcMsgDispatcher>();
@@ -66,6 +67,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
