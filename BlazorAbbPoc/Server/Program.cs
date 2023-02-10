@@ -1,9 +1,9 @@
 using BlazorAbbPoc.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using BlazorAbbPoc.Server.Models;
-using Microsoft.Extensions.DependencyInjection;
 using BlazorAbbPoc.Server.Workers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using BlazorAbbPoc.Server.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +18,8 @@ builder.Services.AddSingleton<IActualValueService, ActualValueService>();
 builder.Services.AddSingleton<IHierarchicalNameService, HierarchicalNameService>();
 builder.Services.AddSingleton<IPlcMsgDispatcher, PlcMsgDispatcher>();
 builder.Services.AddHostedService<RabbitMqWorker>();
+
+builder.Services.Configure<AnomalyDetectionOptions>(builder.Configuration.GetSection(AnomalyDetectionOptions.AnomalyDetection));
 
 builder.Services.AddDbContext<ApiDbContext>(options => 
     options.UseNpgsql("host=postgres;port=5432;database=blogdb;username=bloguser;password=bloguser", o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
@@ -54,6 +56,7 @@ using (var scope = ssf.CreateScope())
     }
 }
 
+//hierarchicalnameservice must be initialized befor the plcmessagedispatcher, because the latter uses te former on init
 IHierarchicalNameService hierarchicalNameService = app.Services.GetRequiredService<IHierarchicalNameService>();
 hierarchicalNameService.Initialize();
 IPlcMsgDispatcher plcMsgDispatcher = app.Services.GetRequiredService<IPlcMsgDispatcher>();

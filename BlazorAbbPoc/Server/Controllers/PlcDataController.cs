@@ -43,7 +43,7 @@ namespace BlazorAbbPoc.Server.Controllers
                         && (toDate == null || x.CreTimestamp <= toDate.Value.ToUniversalTime()))
                 .OrderBy(x => x.CreTimestamp).Select(x => new ChartData.TimeSeries
                 {
-                    timestamp = x.CreTimestamp.ToLocalTime(),
+                    timestamp = x.CreTimestamp == null ? null : x.CreTimestamp.Value.ToLocalTime(),
                     l1V = x.L1nV,
                     l2V = x.L2nV,
                     l3V = x.L3nV,

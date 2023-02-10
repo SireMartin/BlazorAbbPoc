@@ -19,4 +19,7 @@ public class ActualValuesDto
 
     //from plc msg or if not available from device settings
     public int? protA_L_I1 { get; set; }
+
+    //todo: take time from plc instead of generated time at construction by back-end
+    public DateTimeOffset? creTimestamp { get; set; }
 }

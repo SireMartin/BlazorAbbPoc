@@ -251,51 +251,51 @@ else
             {
                 Name = "L1 Voltage",
                 Mode = ModeFlag.Lines | ModeFlag.Markers,
-                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
-                Y = chartData.TimeSeriesData.Select(x => (object)x.l1V).ToList()
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToArray(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l1V).ToArray()
             });
         await voltageChart.AddTrace(new Scatter
             {
                 Name = "L2 Voltage",
                 Mode = ModeFlag.Lines | ModeFlag.Markers,
-                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
-                Y = chartData.TimeSeriesData.Select(x => (object)x.l2V).ToList()
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToArray(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l2V).ToArray()
             });
         await voltageChart.AddTrace(new Scatter
             {
                 Name = "L3 Voltage",
                 Mode = ModeFlag.Lines | ModeFlag.Markers,
-                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
-                Y = chartData.TimeSeriesData.Select(x => (object)x.l3V).ToList()
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToArray(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l3V).ToArray()
             });
 
         await currentChart.AddTrace(new Scatter
             {
                 Name = "L1 Current",
                 Mode = ModeFlag.Lines | ModeFlag.Markers,
-                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
-                Y = chartData.TimeSeriesData.Select(x => (object)x.l1A).ToList()
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToArray(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l1A).ToArray()
             });
         await currentChart.AddTrace(new Scatter
             {
                 Name = "L2 Current",
                 Mode = ModeFlag.Lines | ModeFlag.Markers,
-                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
-                Y = chartData.TimeSeriesData.Select(x => (object)x.l2A).ToList()
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToArray(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l2A).ToArray()
             });
         await currentChart.AddTrace(new Scatter
             {
                 Name = "L3 Current",
                 Mode = ModeFlag.Lines | ModeFlag.Markers,
-                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
-                Y = chartData.TimeSeriesData.Select(x => (object)x.l3A).ToList()
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToArray(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.l3A).ToArray()
             });
         await currentChart.AddTrace(new Scatter
             {
                 Name = "N Current",
                 Mode = ModeFlag.Lines | ModeFlag.Markers,
-                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToList(),
-                Y = chartData.TimeSeriesData.Select(x => (object)x.nA).ToList()
+                X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToArray(),
+                Y = chartData.TimeSeriesData.Select(x => (object)x.nA).ToArray()
             });
     }
 

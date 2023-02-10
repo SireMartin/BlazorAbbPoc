@@ -24,9 +24,11 @@ public class PlcMsgDispatcher : IPlcMsgDispatcher
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             ApiDbContext dbContext = scope.ServiceProvider.GetService<ApiDbContext>();
+            //while initializing the protALI1, also fetch the latest measurement from the db for gap detection (while this back-end was down)
             foreach (var iter in dbContext.Devices)
             {
                 _actualValueService.UpdateSettings(_hiIHierarchicalNameService.GetHierarchicalNameForPlcDeviceId(iter.PlcDeviceId), iter.MaxValue);
+                _actualValueService.UpdateLatestTimestamp(_hiIHierarchicalNameService.GetHierarchicalNameForPlcDeviceId(iter.PlcDeviceId), dbContext.Measurements.Where(x => x.DeviceId == iter.Id)?.Max(x => x.CreTimestamp));
             }
         }
     }
@@ -35,7 +37,7 @@ public class PlcMsgDispatcher : IPlcMsgDispatcher
     {
         //update actual values for gauge visualisation
         string hierarchicalDeviceName = _hiIHierarchicalNameService.GetHierarchicalNameForPlcDeviceId(argMsg.deviceId);
-        _actualValueService.UpdatePlcValues(hierarchicalDeviceName, argMsg);
+        bool gapDetected = _actualValueService.UpdatePlcValues(hierarchicalDeviceName, argMsg);
 
         using (var scope = _serviceScopeFactory.CreateScope())
         {
@@ -50,6 +52,16 @@ public class PlcMsgDispatcher : IPlcMsgDispatcher
                     _logger.LogInformation($"protA_L_I1 changed from {_actualValueService.GetActualValuesForHierarchicalName(hierarchicalDeviceName).protA_L_I1} to {argMsg.ProtA_L_I1} for device {argMsg.deviceId} => persist to database");
                     _actualValueService.UpdateSettings(_hiIHierarchicalNameService.GetHierarchicalNameForPlcDeviceId(argMsg.deviceId), argMsg.ProtA_L_I1.Value);
                     dbDevice.MaxValue = argMsg.ProtA_L_I1.Value;
+                }
+
+                //if a gap was detected, add the null value so the graph knows how to plot
+                if (gapDetected)
+                {
+                    dbContext.Measurements.Add(new Measurement
+                    {
+                        DeviceId = dbDevice.Id,
+                        CreTimestamp = DateTimeOffset.UtcNow
+                    });
                 }
 
                 //persist msg to database for graph visualisation

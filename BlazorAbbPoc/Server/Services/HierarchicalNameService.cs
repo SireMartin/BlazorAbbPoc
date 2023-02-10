@@ -15,7 +15,7 @@ public class HierarchicalNameService : IHierarchicalNameService
 
     public HierarchicalNameService(ILogger<HierarchicalNameService> logger, IServiceScopeFactory serviceScopeFactory)
     {
-        _logger = logger;
+        _logger = logger;   
         _serviceScopeFactory = serviceScopeFactory;
     }
 
