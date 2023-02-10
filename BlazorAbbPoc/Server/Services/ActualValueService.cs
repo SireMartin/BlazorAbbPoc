@@ -43,7 +43,7 @@ public class ActualValueService : IActualValueService
             container[key].l3nV = abbPlcMsg.l3nV;
             container[key].pActTotal = abbPlcMsg.pActTotal;
             container[key].pReactTotal = abbPlcMsg.pReactTotal;
-            container[key].pAppTotal = abbPlcMsg.pActTotal;
+            container[key].pAppTotal = abbPlcMsg.pAppTotal;
             container[key].frq = abbPlcMsg.frq;
             container[key].creTimestamp = DateTimeOffset.UtcNow;
         }
