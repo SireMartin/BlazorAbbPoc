@@ -252,21 +252,21 @@ else
                 Name = "L1 Voltage",
                 Mode = ModeFlag.Lines | ModeFlag.Markers,
                 X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToArray(),
-                Y = chartData.TimeSeriesData.Select(x => (object)x.l1V).ToArray()
+                Y = chartData.TimeSeriesData.Select(x => (object)(x.l1V is null ? null : x.l1V / 10)).ToArray()
             });
         await voltageChart.AddTrace(new Scatter
             {
                 Name = "L2 Voltage",
                 Mode = ModeFlag.Lines | ModeFlag.Markers,
                 X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToArray(),
-                Y = chartData.TimeSeriesData.Select(x => (object)x.l2V).ToArray()
+                Y = chartData.TimeSeriesData.Select(x => (object)(x.l2V is null ? null : x.l2V / 10)).ToArray()
             });
         await voltageChart.AddTrace(new Scatter
             {
                 Name = "L3 Voltage",
                 Mode = ModeFlag.Lines | ModeFlag.Markers,
                 X = chartData.TimeSeriesData.Select(x => (object)x.timestamp).ToArray(),
-                Y = chartData.TimeSeriesData.Select(x => (object)x.l3V).ToArray()
+                Y = chartData.TimeSeriesData.Select(x => (object)(x.l3V is null ? null : x.l3V / 10)).ToArray()
             });
 
         await currentChart.AddTrace(new Scatter
