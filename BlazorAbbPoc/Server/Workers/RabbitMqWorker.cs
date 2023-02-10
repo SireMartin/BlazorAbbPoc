@@ -20,44 +20,44 @@ public class RabbitMqWorker : BackgroundService
     {
         return Task.Run(() =>
         {
-            //var factory = new ConnectionFactory() { HostName = "192.168.100.5" };
-            //using (var connection = factory.CreateConnection())
-            //using (var channel = connection.CreateModel())
-            //{
-            //    channel.ExchangeDeclare(exchange: "amq.topic", type: "topic", durable: true);
-            //    var queueName = channel.QueueDeclare(queue: "dotnet_reader", durable: true, exclusive: false, autoDelete: false).QueueName;
+            var factory = new ConnectionFactory() { HostName = "192.168.100.5" };
+            using (var connection = factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                channel.ExchangeDeclare(exchange: "amq.topic", type: "topic", durable: true);
+                var queueName = channel.QueueDeclare(queue: "dotnet_reader", durable: true, exclusive: false, autoDelete: false).QueueName;
 
-            //    var args = new[] { "#" };
+                var args = new[] { "#" };
 
-            //    foreach (var bindingKey in args)
-            //    {
-            //        channel.QueueBind(queue: queueName,
-            //                          exchange: "amq.topic",
-            //                          routingKey: bindingKey);
-            //    }
+                foreach (var bindingKey in args)
+                {
+                    channel.QueueBind(queue: queueName,
+                                      exchange: "amq.topic",
+                                      routingKey: bindingKey);
+                }
 
-            //    Console.WriteLine(" [*] Waiting for messages. To exit press CTRL+C");
+                Console.WriteLine(" [*] Waiting for messages. To exit press CTRL+C");
 
-            //    var consumer = new EventingBasicConsumer(channel);
-            //    consumer.Received += (model, ea) =>
-            //    {
-            //        var body = ea.Body.ToArray();
-            //        var message = Encoding.UTF8.GetString(body);
-            //        var routingKey = ea.RoutingKey;
-            //        Console.WriteLine(" [x] Received '{0}':'{1}'",
-            //                          routingKey,
-            //                          message);
-            //        var plcMsg = JsonSerializer.Deserialize<Shared.Plc.AbbPlcMsg?>(message);
-            //        _plcMsgDispatcher.DispatchPlcMsg(plcMsg);
-            //    };
-            //    channel.BasicConsume(queue: queueName,
-            //                         autoAck: true,
-            //                         consumer: consumer);
+                var consumer = new EventingBasicConsumer(channel);
+                consumer.Received += (model, ea) =>
+                {
+                    var body = ea.Body.ToArray();
+                    var message = Encoding.UTF8.GetString(body);
+                    var routingKey = ea.RoutingKey;
+                    Console.WriteLine(" [x] Received '{0}':'{1}'",
+                                      routingKey,
+                                      message);
+                    var plcMsg = JsonSerializer.Deserialize<Shared.Plc.AbbPlcMsg?>(message);
+                    _plcMsgDispatcher.DispatchPlcMsg(plcMsg);
+                };
+                channel.BasicConsume(queue: queueName,
+                                     autoAck: true,
+                                     consumer: consumer);
                 while (true)
                 {
                     Thread.Sleep(100);
                 }
-            //}
+            }
         });
     }
 }

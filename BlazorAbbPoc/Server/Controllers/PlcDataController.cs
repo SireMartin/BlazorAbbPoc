@@ -39,7 +39,7 @@ namespace BlazorAbbPoc.Server.Controllers
             ChartData result = new ChartData
             {
                 TimeSeriesData = _apiDbContext.Measurements.Include(x => x.Device)
-                .Where(x => x.Device.PlcDeviceId == plcId && x.CreTimestamp > (fromDate == null ? DateTimeOffset.UtcNow.AddDays(-1) : fromDate.Value.ToUniversalTime()) 
+                .Where(x => x.Device.PlcDeviceId == plcId && x.CreTimestamp > (fromDate == null ? DateTimeOffset.UtcNow.AddHours(-1) : fromDate.Value.ToUniversalTime()) 
                         && (toDate == null || x.CreTimestamp <= toDate.Value.ToUniversalTime()))
                 .OrderBy(x => x.CreTimestamp).Select(x => new ChartData.TimeSeries
                 {
@@ -54,7 +54,7 @@ namespace BlazorAbbPoc.Server.Controllers
                 })
             };
             Measurement? latestMeasurement = _apiDbContext.Measurements.Include(x => x.Device)
-                .Where(x => x.Device.PlcDeviceId == plcId && x.CreTimestamp > (fromDate == null ? DateTimeOffset.UtcNow.AddDays(-1) : fromDate.Value.ToUniversalTime()) 
+                .Where(x => x.Device.PlcDeviceId == plcId && x.CreTimestamp > (fromDate == null ? DateTimeOffset.UtcNow.AddHours(-1) : fromDate.Value.ToUniversalTime()) 
                         && (toDate == null || x.CreTimestamp <= toDate.Value.ToUniversalTime()))
                 .OrderByDescending(x => x.CreTimestamp).FirstOrDefault();
             result.AggregatedData = new ChartData.Aggregated
