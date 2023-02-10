@@ -89,7 +89,7 @@ public class PlcMsgDispatcher : IPlcMsgDispatcher
                     PAppL1 = argMsg.pAppL1,
                     PAppL2 = argMsg.pAppL2,
                     PAppL3 = argMsg.pAppL3,
-                    PAppTotal = argMsg.pActTotal,
+                    PAppTotal = argMsg.pAppTotal,
                     Frq = argMsg.frq,
                     ProtA_L_I1 = argMsg.ProtA_L_I1,
                     CreTimestamp = DateTimeOffset.UtcNow
