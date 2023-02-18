@@ -2,7 +2,7 @@ version: "2.4"
 services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.16.2
-    container_name: kibana
+    container_name: abb_kibana
     restart: always
     ports:
       - 5601:5601
@@ -14,10 +14,11 @@ services:
       - elastic
 
   filebeat:
-    image: docker.elastic.co/beats/filebeat:7.16.2
-    container_name: filebeat
+    image: abb_filebeat:1
+    container_name: abb_filebeat
     restart: always
-    user: root:root
+    build: 
+      context: ./filebeat
     environment:
       - strict.perms=false
     links:
@@ -26,12 +27,10 @@ services:
       - elasticsearch
     networks:
       - elastic
-    volumes:
-      - ./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml
   
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
-    container_name: elasticsearch
+    container_name: abb_elasticsearch
     restart: always
     environment:
       - node.name=es01
@@ -47,16 +46,18 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
-    hostname: abb-rabbit
+    container_name: abb_rabbitmq
     restart: always
     ports:
       - 1883:1883
       - 5672:5672
       - 15672:15672
+    networks:
+      - elastic
   
   webapp:
     image: abb_evci_delft:2
+    container_name: abb_webapp
     restart: always
     build: 
       context: ./BlazorAbbPoc
@@ -75,6 +76,7 @@ services:
 
   postgres:
     image: postgres:latest
+    container_name: abb_postgres
     ports:
       - "5432:5432"
     restart: always

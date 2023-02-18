@@ -20,7 +20,7 @@ public class RabbitMqWorker : BackgroundService
     {
         return Task.Run(() =>
         {
-            var factory = new ConnectionFactory() { HostName = "192.168.100.5" };
+            var factory = new ConnectionFactory() { HostName = "rabbitmq" };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {

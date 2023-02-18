@@ -6,7 +6,7 @@ filebeat.config:
 filebeat.inputs:
 - type: mqtt
   hosts: 
-    - tcp://192.168.100.5:1883
+    - tcp://rabbitmq:1883
   topics: 
     - amq/topic
 
@@ -14,3 +14,4 @@ output.elasticsearch.ssl.verification_mode: none
 output.elasticsearch.hosts: ['http://elasticsearch:9200']
 output.elasticsearch.username: 'elastic'
 output.elasticsearch.password: 'elastic'
+output.elasticsearch.pipeline: 'parse_json'
