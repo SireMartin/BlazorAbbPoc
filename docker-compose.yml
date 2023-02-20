@@ -84,9 +84,9 @@ services:
       - data_postgres:/var/lib/postgresql/data
 #      - ./dbscripts/seed.sql:/docker-entrypoint-initdb.d/seed.sql
     environment:
-      POSTGRES_USER: "bloguser"
-      POSTGRES_PASSWORD: "bloguser"
-      POSTGRES_DB: "blogdb"
+      POSTGRES_USER: "sf1"
+      POSTGRES_PASSWORD: "sf123"
+      POSTGRES_DB: "abb"
     networks:
       - elastic
 

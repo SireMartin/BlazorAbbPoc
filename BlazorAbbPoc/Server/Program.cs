@@ -22,7 +22,7 @@ builder.Services.AddHostedService<RabbitMqWorker>();
 builder.Services.Configure<AnomalyDetectionOptions>(builder.Configuration.GetSection(AnomalyDetectionOptions.AnomalyDetection));
 
 builder.Services.AddDbContext<ApiDbContext>(options => 
-    options.UseNpgsql("host=postgres;port=5432;database=blogdb;username=bloguser;password=bloguser", o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
+    options.UseNpgsql("host=postgres;port=5432;database=abb;username=sf1;password=sf123", o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
     );
 
 builder.Services.AddAuthentication(options =>
