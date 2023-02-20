@@ -80,13 +80,13 @@
         <div class="row my-4">
             @*current*@
             <div class="col col-3-lg">
-                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@currentPlcData.l1A.Value" PointerColor="Red" Unit="A" />
+                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@(currentPlcData.l1A.Value / 10)" PointerColor="Red" Unit="A" />
             </div>
             <div class="col col-3-lg">
-                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@currentPlcData.l2A.Value" PointerColor="Red" Unit="A" />
+                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@(currentPlcData.l2A.Value / 10)" PointerColor="Red" Unit="A" />
             </div>
             <div class="col col-3-lg">
-                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@currentPlcData.l3A.Value" PointerColor="Red" Unit="A" />
+                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@(currentPlcData.l3A.Value / 10)" PointerColor="Red" Unit="A" />
             </div>
             <div class="col col-3-lg">
                 <div class="d-flex flex-column justify-content-evenly h-100">
@@ -128,13 +128,13 @@
         <div class="row my-4">
             @*power*@
             <div class="col col-3-lg">
-                <AbbEmaxGauge MinValue="0" MaxValue="100000" GaugeValue="@currentPlcData.pActTotal.Value" PointerColor="Blue" Unit="kW" />
+                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@currentPlcData.pActTotal.Value" PointerColor="Blue" Unit="kW" />
             </div>
             <div class="col col-3-lg">
-                <AbbEmaxGauge MinValue="0" MaxValue="100000" GaugeValue="@currentPlcData.pReactTotal.Value" PointerColor="Blue" Unit="kVAr" />
+                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@currentPlcData.pReactTotal.Value" PointerColor="Blue" Unit="kVAr" />
             </div>
             <div class="col col-3-lg">
-                <AbbEmaxGauge MinValue="0" MaxValue="100000" GaugeValue="@currentPlcData.pAppTotal.Value" PointerColor="Blue" Unit="kVA" />
+                <AbbEmaxGauge MinValue="0" MaxValue="500" GaugeValue="@currentPlcData.pAppTotal.Value" PointerColor="Blue" Unit="kVA" />
             </div>
             <div class="col col-3-lg">
             </div>
