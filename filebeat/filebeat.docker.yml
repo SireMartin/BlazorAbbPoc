@@ -15,3 +15,4 @@ output.elasticsearch.hosts: ['http://elasticsearch:9200']
 output.elasticsearch.username: 'elastic'
 output.elasticsearch.password: 'elastic'
 output.elasticsearch.pipeline: 'parse_json'
+output.elasticsearch.index: "%{[fields.log_type]}-%{[agent.version]}-%{+yyyy.MM.dd}"
