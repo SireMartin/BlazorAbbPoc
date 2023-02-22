@@ -10,6 +10,9 @@ filebeat.inputs:
   topics: 
     - amq/topic
 
+setup.template.name: "filebeat"
+setup.template.pattern: "filebeat"
+
 output.elasticsearch.ssl.verification_mode: none
 output.elasticsearch.hosts: ['http://elasticsearch:9200']
 output.elasticsearch.username: 'elastic'
