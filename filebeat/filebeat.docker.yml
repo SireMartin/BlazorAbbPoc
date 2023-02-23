@@ -11,8 +11,6 @@ filebeat.inputs:
     - amq/topic
 
 setup.ilm.enabled: auto
-setup.ilm.rollover_alias: "filebeat"
-setup.ilm.pattern: "{now/d}-000001"
 setup.ilm.policy_name: "filebeat"
 
 output.elasticsearch.ssl.verification_mode: none
