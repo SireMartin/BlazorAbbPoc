@@ -19,3 +19,4 @@ output.elasticsearch.username: 'elastic'
 output.elasticsearch.password: 'elastic'
 output.elasticsearch.pipeline: 'parse_json'
 output.elasticsearch.index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+output.elasticsearch.rollover.schedule: "0 0 * * *"
