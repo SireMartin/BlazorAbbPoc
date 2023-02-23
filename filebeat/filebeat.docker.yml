@@ -10,13 +10,13 @@ filebeat.inputs:
   topics: 
     - amq/topic
 
-setup.template.name: "filebeat"
-setup.template.pattern: "filebeat"
+setup.ilm.enabled: auto
+setup.ilm.rollover_alias: "filebeat"
+setup.ilm.pattern: "{now/d}-000001"
+setup.ilm.policy_name: "filebeat"
 
 output.elasticsearch.ssl.verification_mode: none
 output.elasticsearch.hosts: ['http://elasticsearch:9200']
 output.elasticsearch.username: 'elastic'
 output.elasticsearch.password: 'elastic'
 output.elasticsearch.pipeline: 'parse_json'
-output.elasticsearch.index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
-output.elasticsearch.rollover.schedule: "0 0 * * *"
